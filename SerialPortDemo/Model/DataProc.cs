@@ -8,9 +8,9 @@ namespace SerialPortDemo.Model {
     using System.Threading.Tasks;
 
     /// <summary>
-    /// The rcv data proc.
+    ///     The rcv data proc.
     /// </summary>
-    public class DataProc {
+    public class DataProcUnit {
         #region Filed  Init  Property
 
         /// <summary>
@@ -19,16 +19,16 @@ namespace SerialPortDemo.Model {
         readonly object rcvLock = new object();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataProc"/> class.
+        ///     Initializes a new instance of the <see cref="DataProcUnit" /> class.
         /// </summary>
-        public DataProc() {
+        public DataProcUnit() {
             RcvCQueue = new ConcurrentQueue<byte[]>();
             RcvList = new List<byte>();
             PortCom = new SerialPortCom();
         }
-        
+
         /// <summary>
-        /// Gets or sets the PortCom.
+        ///     Gets or sets the PortCom.
         /// </summary>
         SerialPortCom PortCom {
             get;
@@ -47,20 +47,21 @@ namespace SerialPortDemo.Model {
         List<byte> RcvList {
             get;
         }
-        
+
         /// <summary>
-        /// The rcv event handler.
+        ///     The rcv event handler.
         /// </summary>
         public event EventHandler<SensorEventArgs> SendEventHandler;
+
         #endregion
 
         #region Method
 
         /// <summary>
-        /// The start Rcv Data.
+        ///     The start Rcv DataTime.
         /// </summary>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool StartRcvData() {
             PortCom.RcvEventHandler += PortRcvByteReached;
@@ -68,26 +69,26 @@ namespace SerialPortDemo.Model {
         }
 
         /// <summary>
-        /// The send data.
+        ///     The send data.
         /// </summary>
         /// <param name="dataBytes">
-        /// command bytes
+        ///     command bytes
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool SendData(byte[] dataBytes) {
-           return PortCom.SendData(dataBytes);
+            return PortCom.SendData(dataBytes);
         }
 
         /// <summary>
-        /// The send angle command.
+        ///     The send angle command.
         /// </summary>
         /// <param name="index">
-        /// The index.
+        ///     The index.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool SendAngleCommand(int index) {
             byte[] angle = { 0x77, 0x04, 0x00, 0x04, 0x08 };
@@ -98,28 +99,28 @@ namespace SerialPortDemo.Model {
         }
 
         /// <summary>
-        /// auto send angle.
+        ///     auto send angle.
         /// </summary>
         /// <param name="index">
-        /// the sensor index.
+        ///     the sensor index.
         /// </param>
         /// <param name="dual">
-        /// send command time dual.
+        ///     send command time dual.
         /// </param>
         /// <param name="period">
-        /// send command time period.
+        ///     send command time period.
         /// </param>
         public void AutoSendAngle(int index, int period = 1000, int dual = 0) {
             byte[] angle = { 0x77, 0x04, 0x00, 0x04, 0x08 };
             angle[2] += (byte)index;
             angle[4] += (byte)index;
-            var autoEvent = new AutoResetEvent(false);
+            AutoResetEvent autoEvent = new AutoResetEvent(false);
             int maxcount = 10;
             int invokecount = 0;
             Task.Run(
                      () => {
                          Timer timer = new Timer(
-                                 (s) => {
+                                 s => {
                                      AutoResetEvent autoReset = (AutoResetEvent)s;
                                      SendData(angle);
                                      invokecount++;
@@ -133,51 +134,49 @@ namespace SerialPortDemo.Model {
                          autoEvent.WaitOne();
                          timer.Dispose();
                      });
-
-
         }
 
         /// <summary>
-        /// The set port param.
+        ///     The set port param.
         /// </summary>
         /// <param name="portname">
-        /// The portname.
+        ///     The portname.
         /// </param>
         /// <param name="boundrate">
-        /// The boundrate.
+        ///     The boundrate.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
-        public bool SetPortParam(string portname,int boundrate) {
+        public bool SetPortParam(string portname, int boundrate) {
             return PortCom.InitSerialPort(portname, boundrate);
         }
 
         /// <summary>
-        /// The close port.
+        ///     The close port.
         /// </summary>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool ClosePort() {
             return PortCom.CloseSerialPort();
         }
 
         /// <summary>
-        /// The init port.
+        ///     The init port.
         /// </summary>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool InitPort() {
             return SetPortParam("COM3", 19200);
         }
 
         /// <summary>
-        /// The open port.
+        ///     The open port.
         /// </summary>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool OpenPort() {
             return PortCom.OpenSerialPort();
@@ -211,7 +210,7 @@ namespace SerialPortDemo.Model {
                                    }
 
                                    var result = new byte[14];
-                                   
+
                                    RcvCQueue.TryDequeue(out result);
                                    Angles angles = new Angles(0, 0, 0);
                                    GetRcvData(result, out angles);
@@ -221,16 +220,16 @@ namespace SerialPortDemo.Model {
         }
 
         /// <summary>
-        /// The get rcv data.
+        ///     The get rcv data.
         /// </summary>
         /// <param name="srcBytes">
-        /// The src bytes.
+        ///     The src bytes.
         /// </param>
         /// <param name="angles">
-        /// The angles.
+        ///     The angles.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         bool GetRcvData(byte[] srcBytes, out Angles angles) {
             if (srcBytes.Length != 14) {
@@ -309,65 +308,23 @@ namespace SerialPortDemo.Model {
 
             sign = GetHeight4(srcBytes[0]) == 0 ? 1 : -1;
 
-            result = sign * (100 * GetLow4(srcBytes[0]) + 10 * GetHeight4(srcBytes[1]) + 1 * GetLow4(srcBytes[1]) + 0.1 * GetHeight4(srcBytes[2])
+            result = sign
+                     * (100 * GetLow4(srcBytes[0]) + 10 * GetHeight4(srcBytes[1]) + 1 * GetLow4(srcBytes[1]) + 0.1 * GetHeight4(srcBytes[2])
                         + 0.01 * GetLow4(srcBytes[2]));
 
             return result;
         }
 
         /// <summary>
-        /// The on rcv event handler.
+        ///     The on rcv event handler.
         /// </summary>
         /// <param name="e">
-        /// The e.
+        ///     The e.
         /// </param>
         protected virtual void OnSendEventHandler(SensorEventArgs e) {
             SendEventHandler?.Invoke(this, e);
         }
+
         #endregion
-    }
-
-    /// <summary>
-    ///     The angles.
-    /// </summary>
-    public struct Angles {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Angles" /> struct.
-        /// </summary>
-        /// <param name="head">
-        ///     The head.
-        /// </param>
-        /// <param name="pitch">
-        ///     The pitch.
-        /// </param>
-        /// <param name="roll">
-        ///     The roll.
-        /// </param>
-        public Angles(double head, double pitch, double roll) {
-            Head = head;
-            Pitch = pitch;
-            Roll = roll;
-        }
-
-        /// <summary>
-        ///     Gets the head.
-        /// </summary>
-        public double Head {
-            get;
-        }
-
-        /// <summary>
-        ///     Gets the pitch.
-        /// </summary>
-        public double Pitch {
-            get;
-        }
-
-        /// <summary>
-        ///     Gets the roll.
-        /// </summary>
-        public double Roll {
-            get;
-        }
     }
 }

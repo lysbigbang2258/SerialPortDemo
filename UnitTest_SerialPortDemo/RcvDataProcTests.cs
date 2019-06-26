@@ -6,12 +6,12 @@ namespace UnitTest_SerialPortDemo
     using SerialPortDemo;
     using SerialPortDemo.Model;
 
-    public class DataProcTests :IClassFixture<SerialPortComFixture>, IDisposable
+    public class DataProcUnitTests :IClassFixture<SerialPortComFixture>, IDisposable
     {
 
         SerialPortComFixture serialPortComFixture;
 
-        public DataProcTests(SerialPortComFixture serialPortComFixture)
+        public DataProcUnitTests(SerialPortComFixture serialPortComFixture)
         {
             this.serialPortComFixture = serialPortComFixture;
         }
@@ -19,9 +19,9 @@ namespace UnitTest_SerialPortDemo
         public void Dispose()
         { }
 
-        private DataProc CreateRcvDataProc()
+        private DataProcUnit CreateRcvDataProc()
         {
-            return new DataProc();
+            return new DataProcUnit();
         }
 
         [Fact]

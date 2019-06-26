@@ -1,7 +1,17 @@
-﻿<Application
+<Application
     x:Class="SerialPortDemo.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    StartupUri="View/OneWindow.xaml">
-    <Application.Resources />
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d1p1:Ignorable="d"
+    StartupUri="View/MasterWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <vm:ViewModelLocator
+                xmlns:vm="clr-namespace:SerialPortDemo.ViewModel"
+                x:Key="Locator"
+                d:IsDataSource="True" />
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

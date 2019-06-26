@@ -1,0 +1,50 @@
+﻿<UserControl
+    x:Class="SerialPortDemo.View.SensorPanelControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:SerialPortDemo.View"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <StackPanel Name="rootPanel">
+        <DockPanel>
+            <Label
+                Name="label"
+                HorizontalAlignment="Center"
+                Content="传感器"
+                FontSize="20" />
+            <Label
+                Name="labelSensorId"
+                Content="{Binding LabNum}"
+                FontSize="20" />
+        </DockPanel>
+
+        <DockPanel Margin="5">
+            <Label Content="X值：" FontSize="14" />
+            <TextBox
+                Name="tbHead"
+                Width="100"
+                Background="AliceBlue"
+                BorderThickness="0"
+                Text="{Binding HeadContent}" />
+        </DockPanel>
+        <DockPanel Margin="5">
+            <Label Content="Y值：" FontSize="14" />
+            <TextBox
+                Name="tbPitch"
+                Width="100"
+                Background="AliceBlue"
+                BorderThickness="0"
+                Text="{Binding PitchContent}" />
+        </DockPanel>
+        <DockPanel Margin="5">
+            <Label Content="Z值：" FontSize="14" />
+            <TextBox
+                Name="tbRoll"
+                Width="100"
+                Background="AliceBlue"
+                BorderThickness="0"
+                Text="{Binding RollContent}" />
+        </DockPanel>
+    </StackPanel>
+</UserControl>

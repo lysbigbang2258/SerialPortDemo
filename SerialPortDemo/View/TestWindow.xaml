@@ -1,0 +1,74 @@
+﻿<Window
+    x:Class="SerialPortDemo.View.TestWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:SerialPortDemo.View"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="TestWindow"
+    Width="1024"
+    Height="720"
+    mc:Ignorable="d">
+
+    <StackPanel>
+        <Grid
+            Name="gridSensors"
+            Grid.Row="2"
+            Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <local:SensorPanelControl
+                x:Name="oneCtl"
+                Grid.Row="0"
+                Grid.Column="0"
+                HeadContent="{Binding AngleContent.Head}"
+                LabNum="1"
+                PitchContent="{Binding AngleContent.Pitch}"
+                RollContent="{Binding AngleContent.Roll}" />
+            <local:SensorPanelControl
+                Grid.Row="0"
+                Grid.Column="1"
+                LabNum="2" />
+            <local:SensorPanelControl
+                Grid.Row="0"
+                Grid.Column="2"
+                LabNum="3" />
+            <local:SensorPanelControl
+                Grid.Row="0"
+                Grid.Column="3"
+                LabNum="4" />
+            <local:SensorPanelControl
+                Grid.Row="1"
+                Grid.Column="0"
+                LabNum="5" />
+            <local:SensorPanelControl
+                Grid.Row="1"
+                Grid.Column="1"
+                LabNum="6" />
+            <local:SensorPanelControl
+                Grid.Row="1"
+                Grid.Column="2"
+                LabNum="7" />
+            <local:SensorPanelControl
+                Grid.Row="1"
+                Grid.Column="3"
+                LabNum="8" />
+
+        </Grid>
+        <Button
+            Width="100"
+            Height="20"
+            Click="ButtonBase_OnClick" />
+    </StackPanel>
+
+</Window>

@@ -5,11 +5,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="OneWindow"
-    Width="1024"
-    Height="768"
-    FontSize="18"
-    mc:Ignorable="d">
-    <Grid>
+    Width="1600"
+    Height="900"
+    DataContext="{Binding Source={StaticResource Locator}, Path=OneWindow}"
+    FontSize="14">
+    <Grid ShowGridLines="True">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
@@ -34,21 +34,21 @@
                         FontFamily="YaHei"
                         FontSize="30" />
                     <DockPanel Margin="5">
-                        <Label Content="X值：" FontSize="20" />
+                        <Label Content="X值：" FontSize="14" />
                         <TextBox
                             Name="tb_firstHead"
                             Width="100"
                             Background="Aquamarine" />
                     </DockPanel>
                     <DockPanel Margin="5">
-                        <Label Content="Y值：" FontSize="20" />
+                        <Label Content="Y值：" FontSize="14" />
                         <TextBox
                             Name="tb_firstPitch"
                             Width="100"
                             Background="Aquamarine" />
                     </DockPanel>
                     <DockPanel Margin="5">
-                        <Label Content="Z值：" FontSize="20" />
+                        <Label Content="Z值：" FontSize="14" />
                         <TextBox
                             Name="tb_firstRoll"
                             Width="100"
@@ -62,25 +62,28 @@
                         FontFamily="YaHei"
                         FontSize="30" />
                     <DockPanel Margin="5">
-                        <Label Content="X值：" FontSize="20" />
+                        <Label Content="X值：" FontSize="14" />
                         <TextBox
                             Name="tb_secondHead"
                             Width="100"
-                            Background="Aquamarine" />
+                            Background="Aquamarine"
+                            Text="{Binding SensorData.Head}" />
                     </DockPanel>
                     <DockPanel Margin="5">
-                        <Label Content="Y值：" FontSize="20" />
+                        <Label Content="Y值：" FontSize="14" />
                         <TextBox
                             Name="tb_secondPitch"
                             Width="100"
-                            Background="Aquamarine" />
+                            Background="Aquamarine"
+                            Text="{Binding SensorData.Pitch}" />
                     </DockPanel>
                     <DockPanel Margin="5">
-                        <Label Content="Z值：" FontSize="20" />
+                        <Label Content="Z值：" FontSize="14" />
                         <TextBox
                             Name="tb_secondRoll"
                             Width="100"
-                            Background="Aquamarine" />
+                            Background="Aquamarine"
+                            Text="{Binding SensorData.Roll}" />
                     </DockPanel>
                 </StackPanel>
 
@@ -91,24 +94,34 @@
                     <Button
                         Name="btnStart"
                         Width="100"
-                        Click="BtnStart_OnClick"
+                        Command="{Binding BtnStartClickCommand}"
                         Content="打开串口" />
 
                     <Button
                         Name="btnGetParm"
                         Width="100"
-                        Click="BtnGetParm_OnClick"
+                        Margin="10,0,0,0"
+                        Command="{Binding BtnGetParmclickCommand}"
                         Content="获取参数" />
-
+                    <Label Width="100" Content="发送间隔" />
+                    <TextBox
+                        Name="tbInterval"
+                        Width="100"
+                        Background="Aquamarine" />
                     <Button
                         Name="btnAutoGetParm"
                         Width="120"
-                        Click="BtnAutoGetParm_OnClick"
+                        Margin="5,0,0,0"
+                        Command="{Binding BtnGetAutoParmclickCommand}"
                         Content="自动获取参数" />
                 </DockPanel>
             </Grid>
             <Grid Grid.Row="2">
-                <StackPanel>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="65*" />
+                    <ColumnDefinition Width="444*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.ColumnSpan="2" Margin="0,0,-0.2,-0.2">
                     <Label HorizontalAlignment="Center" Content="信息接收" />
                     <TextBox Name="tbMsg" Height="300" />
                 </StackPanel>
