@@ -87,6 +87,7 @@
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MasterWindowModel.cs" />
     <Compile Include="ViewModel\OneWindowModel.cs" />
+    <Compile Include="ViewModel\SensorPanelViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\MasterWindow.xaml.cs">
       <DependentUpon>MasterWindow.xaml</DependentUpon>
@@ -102,8 +103,8 @@
     </Compile>
     <Compile Include="Model\DataProc.cs" />
     <Compile Include="Model\SerialPortCom.cs" />
-    <Compile Include="View\SensorPanelControl.xaml.cs">
-      <DependentUpon>SensorPanelControl.xaml</DependentUpon>
+    <Compile Include="View\SensorPanelView.xaml.cs">
+      <DependentUpon>SensorPanelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TestWindow.xaml.cs">
       <DependentUpon>TestWindow.xaml</DependentUpon>
@@ -128,7 +129,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\SensorPanelControl.xaml">
+    <Page Include="View\SensorPanelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

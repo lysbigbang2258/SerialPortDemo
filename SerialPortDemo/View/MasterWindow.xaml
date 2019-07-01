@@ -9,6 +9,7 @@
     Title="MasterWindow"
     Width="1100"
     Height="700"
+    DataContext="{Binding Source={StaticResource Locator}, Path=MasterWindow}"
     FontFamily="SimSun，微软雅黑"
     FontSize="16"
     TextOptions.TextFormattingMode="Display"
@@ -66,8 +67,13 @@
                             <Label
                                 Width="60"
                                 HorizontalContentAlignment="Left"
-                                Content="端口号:" />
-                            <ComboBox Name="combPort" Width="100" />
+                                Content="端口号：" />
+                            <ComboBox
+                                Name="combPort"
+                                Width="100"
+                                ItemsSource="{Binding ComCollection}"
+                                SelectedIndex="0"
+                                SelectedItem="{Binding ComCollectionItem}" />
                         </DockPanel>
 
                         <DockPanel Grid.Row="1" Margin="5">
@@ -78,7 +84,10 @@
                             <ComboBox
                                 Name="combBaudRate"
                                 Width="100"
-                                HorizontalContentAlignment="Left" />
+                                HorizontalContentAlignment="Left"
+                                ItemsSource="{Binding BaundCollection}"
+                                SelectedIndex="0"
+                                SelectedItem="{Binding BaundCollectionItem}" />
                         </DockPanel>
 
                         <TextBlock
@@ -86,16 +95,51 @@
                             Margin="10"
                             HorizontalAlignment="Center"
                             FontSize="20"
-                            Text="串口已连接" />
+                            Text="串口已连接">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Hidden" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOpen}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
 
                         <DockPanel Grid.Row="3" Height="40">
-                            <Button Width="30" Margin="5" />
+                            <Ellipse Width="44" Stroke="Black">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="AntiqueWhite" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOpen}" Value="True">
+                                                <Setter Property="Fill" Value="OrangeRed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+
                             <Button
                                 Width="80"
                                 Margin="5"
                                 HorizontalAlignment="Right"
-                                Command="{Binding}"
-                                Content="打开" />
+                                Command="{Binding OpenSerial}">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Content" Value="打开" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOpen}" Value="True">
+                                                <Setter Property="Content" Value="关闭" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
                         </DockPanel>
                     </Grid>
 
@@ -224,8 +268,19 @@
                             Width="180"
                             HorizontalContentAlignment="Center"
                             VerticalContentAlignment="Center"
-                            Content="开始采集"
-                            FontSize="20" />
+                            Command="{Binding CollectData}"
+                            FontSize="20">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Content" Value="开始采集" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsCollected}" Value="True">
+                                            <Setter Property="Content" Value="关闭采集" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                         <DockPanel>
                             <Label
                                 VerticalContentAlignment="Center"
@@ -246,55 +301,19 @@
                     Name="gridSensors"
                     Grid.Row="2"
                     Margin="5">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*" />
-                        <RowDefinition Height="1*" />
-                    </Grid.RowDefinitions>
-
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                    </Grid.ColumnDefinitions>
-
-                    <local:SensorPanelControl
-                        x:Name="oneCtl"
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        HeadContent="{Binding AngleContent.Head}"
-                        LabNum="1"
-                        PitchContent="{Binding AngleContent.Pitch}"
-                        RollContent="{Binding AngleContent.Roll}" />
-                    <local:SensorPanelControl
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        LabNum="2" />
-                    <local:SensorPanelControl
-                        Grid.Row="0"
-                        Grid.Column="2"
-                        LabNum="3" />
-                    <local:SensorPanelControl
-                        Grid.Row="0"
-                        Grid.Column="3"
-                        LabNum="4" />
-                    <local:SensorPanelControl
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        LabNum="5" />
-                    <local:SensorPanelControl
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        LabNum="6" />
-                    <local:SensorPanelControl
-                        Grid.Row="1"
-                        Grid.Column="2"
-                        LabNum="7" />
-                    <local:SensorPanelControl
-                        Grid.Row="1"
-                        Grid.Column="3"
-                        LabNum="8" />
-
+                    <StackPanel Width="700" HorizontalAlignment="Left">
+                        <ItemsControl
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            ItemsSource="{Binding SensorPanelViews}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <!--  表示是纵向排列，像素达到500的时候挤到下一行中  -->
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </StackPanel>
                 </Grid>
             </Grid>
 

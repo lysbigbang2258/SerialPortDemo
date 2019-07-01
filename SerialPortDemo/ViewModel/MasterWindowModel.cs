@@ -1,15 +1,19 @@
 ﻿// 2019062416:34
 
 namespace SerialPortDemo.ViewModel {
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
 
     using GalaSoft.MvvmLight;
     using GalaSoft.MvvmLight.Command;
 
     using SerialPortDemo.Model;
+    using SerialPortDemo.View;
 
     public class MasterWindowModel : ViewModelBase {
         #region Filed
+
+        #region Property Filed
 
         string filePath;
 
@@ -25,9 +29,15 @@ namespace SerialPortDemo.ViewModel {
 
         bool isStartSave;
 
+        DataProcUnit procUnit;
+
         ObservableCollection<string> comCollection;
 
+        string comCollectionItem;
+
         ObservableCollection<int> baundCollection;
+
+        int baundCollectionItem;
 
         bool isOpen;
 
@@ -37,7 +47,13 @@ namespace SerialPortDemo.ViewModel {
 
         string textMsg;
 
-        public Angles anglesContent;
+        Angles anglesContent;
+
+        bool isCollected;
+
+        #endregion
+
+        #region Command Filed
 
         RelayCommand openSerial;
 
@@ -55,18 +71,62 @@ namespace SerialPortDemo.ViewModel {
 
         RelayCommand clearLogText;
 
+        RelayCommand collectData;
+
+
+
         #endregion
 
+        #endregion
+
+        #region Init
+
         public MasterWindowModel() {
-            DataProc = new DataProcUnit();
-            DataProc.SendEventHandler += GetDataReached;
+            ProcUnit.SendEventHandler += GetDataReached;
+            Init();
         }
+
+        void Init() {
+            var t = ProcUnit.GetPortNames();
+            ComCollection = new ObservableCollection<string>();
+            foreach(string s in t) {
+                ComCollection.Add(item: s);
+            }
+
+            BaundCollection = new ObservableCollection<int> { 2400, 4800, 9600, 19200, 38400, 38400, 57600, 115200 };
+
+
+            SensorPanelViews = new ObservableCollection<SensorPanelView>();
+            SensorPanelViewModels = new ObservableCollection<SensorPanelViewModel>();
+
+            for(int i = 0; i < 8; i++) {
+                string str = i.ToString();
+                SensorPanelViewModel viewModel = new SensorPanelViewModel(num: str, head: str, pitch: str, roll: str);
+                SensorPanelView view = new SensorPanelView(viewModel: viewModel);
+                SensorPanelViews.Add(item: view);
+                SensorPanelViewModels.Add(item: viewModel);
+            }
+        }
+
+        #endregion
 
         #region Property
 
-        public DataProcUnit DataProc {
+        #region Field Property
+
+        public ObservableCollection<SensorPanelView> SensorPanelViews {
             get;
             set;
+        }
+
+        public ObservableCollection<SensorPanelViewModel> SensorPanelViewModels {
+            get;
+            set;
+        }
+
+        public DataProcUnit ProcUnit {
+            get => procUnit ?? (procUnit = new DataProcUnit());
+            set => procUnit = value;
         }
 
         public string FilePath {
@@ -158,6 +218,16 @@ namespace SerialPortDemo.ViewModel {
             }
         }
 
+        public bool IsCollected {
+            get => isCollected;
+
+            set {
+                isCollected = value;
+                RaisePropertyChanged(() => IsCollected);
+            }
+        }
+
+
         public string RcvRate {
             get => rcvRate;
 
@@ -192,60 +262,110 @@ namespace SerialPortDemo.ViewModel {
             }
         }
 
-        RelayCommand OpenSerial {
-            get => openSerial ?? (openSerial = new RelayCommand(ExcuteOpenSerial));
+        public string ComCollectionItem {
+            get => comCollectionItem;
+            set {
+                comCollectionItem = value;
+                RaisePropertyChanged(() => ComCollectionItem);
+            }
+        }
+
+        public int BaundCollectionItem {
+            get => baundCollectionItem;
+            set {
+                baundCollectionItem = value;
+                RaisePropertyChanged(() => BaundCollectionItem);
+            }
+        }
+
+
+        #endregion
+
+        #region Command Property
+
+        public RelayCommand OpenSerial {
+            get => openSerial ?? (openSerial = new RelayCommand(execute: ExcuteOpenSerial));
 
             set => openSerial = value;
         }
 
-        RelayCommand SelectedOnComCombox {
-            get => selectedOnComCombox ?? (selectedOnComCombox = new RelayCommand(ExcuteSelectedOnComCombox));
+        public RelayCommand SelectedOnComCombox {
+            get => selectedOnComCombox ?? (selectedOnComCombox = new RelayCommand(execute: ExcuteSelectedOnComCombox));
 
             set => selectedOnBaundCombox = value;
         }
 
-        RelayCommand SelectedOnBaundCombox {
-            get => selectedOnBaundCombox ?? (selectedOnBaundCombox = new RelayCommand(ExcuteSelectedOnBaundCombox));
+        public RelayCommand SelectedOnBaundCombox {
+            get => selectedOnBaundCombox ?? (selectedOnBaundCombox = new RelayCommand(execute: ExcuteSelectedOnBaundCombox));
 
             set => selectedOnBaundCombox = value;
         }
 
-        RelayCommand ChangePath {
-            get => changePath ?? (changePath = new RelayCommand(ExcuteChangePath));
+        public RelayCommand ChangePath {
+            get => changePath ?? (changePath = new RelayCommand(execute: ExcuteChangePath));
 
             set => changePath = value;
         }
 
-        RelayCommand ChangeFileName {
-            get => changeFileName ?? (changeFileName = new RelayCommand(ExcuteChangeFileName));
+        public RelayCommand ChangeFileName {
+            get => changeFileName ?? (changeFileName = new RelayCommand(execute: ExcuteChangeFileName));
 
             set => changePath = value;
         }
 
-        RelayCommand SaveOnceCommand {
-            get => saveOnceCommand ?? (saveOnceCommand = new RelayCommand(ExcuteSaveOnceCommand));
+        public RelayCommand SaveOnceCommand {
+            get => saveOnceCommand ?? (saveOnceCommand = new RelayCommand(execute: ExcuteSaveOnceCommand));
 
             set => saveOnceCommand = value;
         }
 
-        RelayCommand SaveLogText {
-            get => saveLogText ?? (saveLogText = new RelayCommand(ExcuteSaveLogText));
+        public RelayCommand SaveLogText {
+            get => saveLogText ?? (saveLogText = new RelayCommand(execute: ExcuteSaveLogText));
 
             set => saveLogText = value;
         }
 
-        RelayCommand ClearLogText {
-            get => clearLogText ?? (clearLogText = new RelayCommand(ExcuteClearLogText));
+        public RelayCommand ClearLogText {
+            get => clearLogText ?? (clearLogText = new RelayCommand(execute: ExcuteClearLogText));
 
             set => clearLogText = value;
         }
+
+        public RelayCommand CollectData {
+            get => collectData ?? (collectData = new RelayCommand(ExcuteCollectData));
+            set {
+                collectData = value;
+            }
+        }
+
+
+        #endregion
 
         #endregion
 
         #region Method
 
         void ExcuteOpenSerial() {
+            if (!IsOpen) {
+                ProcUnit.InitPort(ComCollectionItem, BaundCollectionItem);
+                IsOpen = ProcUnit.OpenPort();
+            }
+            else {
+                IsOpen = false;
+                ProcUnit.ClosePort();
+            }
+        }
 
+        void ExcuteCollectData() {
+            ProcUnit.StartRcvData();
+            ProcUnit.AutoSendAngle(2);
+        }
+
+        void GetDataReached(object sender, SensorEventArgs e) {
+            var num = e.Num;
+            SensorPanelViewModels[num].TextHead = e.Angles.Head.ToString();
+            SensorPanelViewModels[num].TextPitch = e.Angles.Pitch.ToString();
+            SensorPanelViewModels[num].TextRoll = e.Angles.Roll.ToString();
         }
 
         void ExcuteSelectedOnComCombox() { }
@@ -262,7 +382,7 @@ namespace SerialPortDemo.ViewModel {
 
         void ExcuteClearLogText() { }
 
-        void GetDataReached(object sender, SensorEventArgs e) { }
+        
 
         #endregion
     }

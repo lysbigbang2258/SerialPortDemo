@@ -46,6 +46,7 @@ namespace SerialPortDemo.ViewModel
 
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<OneWindowModel>();
+            SimpleIoc.Default.Register<MasterWindowModel>();
         }
 
         public MainViewModel Main

@@ -133,6 +133,7 @@ namespace SerialPortDemo.Model {
                                  period);
                          autoEvent.WaitOne();
                          timer.Dispose();
+                         ClosePort();
                      });
         }
 
@@ -163,13 +164,19 @@ namespace SerialPortDemo.Model {
         }
 
         /// <summary>
-        ///     The init port.
+        /// The init port.
         /// </summary>
+        /// <param name="com">
+        /// The com.
+        /// </param>
+        /// <param name="rate">
+        /// The rate.
+        /// </param>
         /// <returns>
-        ///     The <see cref="bool" />.
+        /// The <see cref="bool"/>.
         /// </returns>
-        public bool InitPort() {
-            return SetPortParam("COM3", 19200);
+        public bool InitPort(string com = "COM3", int rate = 19200) {
+            return SetPortParam(com, rate);
         }
 
         /// <summary>
@@ -201,7 +208,6 @@ namespace SerialPortDemo.Model {
                                                if (RcvList[i] != 0x77) {
                                                    continue;
                                                }
-
                                                var temp = RcvList.GetRange(i, 14);
                                                RcvList.RemoveRange(i, 14);
                                                RcvCQueue.Enqueue(temp.ToArray());
@@ -214,8 +220,11 @@ namespace SerialPortDemo.Model {
                                    RcvCQueue.TryDequeue(out result);
                                    Angles angles = new Angles(0, 0, 0);
                                    GetRcvData(result, out angles);
-                                   int index = result[2];
-                                   OnSendEventHandler(new SensorEventArgs(angles, index));
+                                   if (result != null) {
+                                       int index = result[2];
+                                       OnSendEventHandler(new SensorEventArgs(angles, index));
+                                   }
+                                   
                                });
         }
 
@@ -232,6 +241,10 @@ namespace SerialPortDemo.Model {
         ///     The <see cref="bool" />.
         /// </returns>
         bool GetRcvData(byte[] srcBytes, out Angles angles) {
+            if (srcBytes == null) {
+                angles = new Angles(0, 0, 0);
+                return false;
+            }
             if (srcBytes.Length != 14) {
                 angles = new Angles(0, 0, 0);
                 return false;
@@ -315,6 +328,11 @@ namespace SerialPortDemo.Model {
             return result;
         }
 
+        public string[] GetPortNames() {
+            return PortCom.GetPortNames();
+        }
+
+
         /// <summary>
         ///     The on rcv event handler.
         /// </summary>
@@ -325,6 +343,8 @@ namespace SerialPortDemo.Model {
             SendEventHandler?.Invoke(this, e);
         }
 
+
+       
         #endregion
     }
 }

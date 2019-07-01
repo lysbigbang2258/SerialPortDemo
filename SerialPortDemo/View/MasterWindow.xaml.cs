@@ -12,11 +12,11 @@
         public MasterWindow()
         {
             InitializeComponent();
-            SensorPanels = new List<SensorPanelControl>();
+            SensorPanels = new List<SensorPanelView>();
             InitGridMsg();
         }
 
-        public List<SensorPanelControl> SensorPanels {
+        public List<SensorPanelView> SensorPanels {
             get;
             set;
         }

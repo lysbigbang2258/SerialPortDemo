@@ -11,58 +11,58 @@
     mc:Ignorable="d">
 
     <StackPanel>
-        <Grid
-            Name="gridSensors"
-            Grid.Row="2"
-            Margin="5">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
-            </Grid.RowDefinitions>
+        <Grid Name="gridSensors" Margin="5">
+            <StackPanel Width="1000" HorizontalAlignment="Left">
+                <ItemsControl
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    ItemsSource="{Binding SensorPanelViews}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <!--  表示是纵向排列，像素达到500的时候挤到下一行中  -->
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </StackPanel>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
-
-            <local:SensorPanelControl
-                x:Name="oneCtl"
-                Grid.Row="0"
-                Grid.Column="0"
-                HeadContent="{Binding AngleContent.Head}"
-                LabNum="1"
-                PitchContent="{Binding AngleContent.Pitch}"
-                RollContent="{Binding AngleContent.Roll}" />
-            <local:SensorPanelControl
-                Grid.Row="0"
-                Grid.Column="1"
-                LabNum="2" />
-            <local:SensorPanelControl
-                Grid.Row="0"
-                Grid.Column="2"
-                LabNum="3" />
-            <local:SensorPanelControl
-                Grid.Row="0"
-                Grid.Column="3"
-                LabNum="4" />
-            <local:SensorPanelControl
-                Grid.Row="1"
-                Grid.Column="0"
-                LabNum="5" />
-            <local:SensorPanelControl
-                Grid.Row="1"
-                Grid.Column="1"
-                LabNum="6" />
-            <local:SensorPanelControl
-                Grid.Row="1"
-                Grid.Column="2"
-                LabNum="7" />
-            <local:SensorPanelControl
-                Grid.Row="1"
-                Grid.Column="3"
-                LabNum="8" />
+            <!--  <local:SensorPanelView  -->
+            <!--  x:Name="oneCtl"  -->
+            <!--  Grid.Row="0"  -->
+            <!--  Grid.Column="0"  -->
+            <!--  DataContext="{Binding AnglesContent}"  -->
+            <!--  HeadContent="{Binding Path=Head}"  -->
+            <!--  LabNum="1"  -->
+            <!--  PitchContent="{Binding Path=Roll}"  -->
+            <!--  RollContent="{Binding Path=Pitch}" />  -->
+            <!--  <local:SensorPanelView  -->
+            <!--  Grid.Row="0"  -->
+            <!--  Grid.Column="1"  -->
+            <!--  LabNum="2" />  -->
+            <!--  <local:SensorPanelView  -->
+            <!--  Grid.Row="0"  -->
+            <!--  Grid.Column="2"  -->
+            <!--  LabNum="3" />  -->
+            <!--  <local:SensorPanelView  -->
+            <!--  Grid.Row="0"  -->
+            <!--  Grid.Column="3"  -->
+            <!--  LabNum="4" />  -->
+            <!--  <local:SensorPanelView  -->
+            <!--  Grid.Row="1"  -->
+            <!--  Grid.Column="0"  -->
+            <!--  LabNum="5" />  -->
+            <!--  <local:SensorPanelView  -->
+            <!--  Grid.Row="1"  -->
+            <!--  Grid.Column="1"  -->
+            <!--  LabNum="6" />  -->
+            <!--  <local:SensorPanelView  -->
+            <!--  Grid.Row="1"  -->
+            <!--  Grid.Column="2"  -->
+            <!--  LabNum="7" />  -->
+            <!--  <local:SensorPanelView  -->
+            <!--  Grid.Row="1"  -->
+            <!--  Grid.Column="3"  -->
+            <!--  LabNum="8" />  -->
 
         </Grid>
         <Button
