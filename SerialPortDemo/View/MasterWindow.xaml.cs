@@ -13,21 +13,12 @@
         {
             InitializeComponent();
             SensorPanels = new List<SensorPanelView>();
-            InitGridMsg();
         }
 
         public List<SensorPanelView> SensorPanels {
             get;
             set;
         }
-        void InitGridMsg() {
-            int id = 0;
-            for(int i = 0; i < 5; i++) {
-                var panel = (DockPanel)gridMsg.Children[i];
-                panel.Margin = new Thickness(5);
-            }
-        }
-
 
     }
 }

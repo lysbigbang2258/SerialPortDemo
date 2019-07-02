@@ -29,7 +29,8 @@ namespace UnitTest_SerialPortDemo
         {
             // Arrange
             var unitUnderTest = this.CreateRcvDataProc();
-
+            
+            
             // Act
             var result = unitUnderTest.StartRcvData();
 

@@ -85,9 +85,9 @@
                                 Name="combBaudRate"
                                 Width="100"
                                 HorizontalContentAlignment="Left"
-                                ItemsSource="{Binding BaundCollection}"
+                                ItemsSource="{Binding BaudCollection}"
                                 SelectedIndex="0"
-                                SelectedItem="{Binding BaundCollectionItem}" />
+                                SelectedItem="{Binding BaudCollectionItem}" />
                         </DockPanel>
 
                         <TextBlock
@@ -127,7 +127,7 @@
                                 Width="80"
                                 Margin="5"
                                 HorizontalAlignment="Right"
-                                Command="{Binding OpenSerial}">
+                                Command="{Binding OpenSerialCommand}">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="Content" Value="打开" />
@@ -146,42 +146,34 @@
                     <Grid Name="gridMsg" Grid.Column="1">
                         <Grid.RowDefinitions>
                             <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
+
                             <RowDefinition />
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <DockPanel Grid.Row="0">
                             <Label VerticalAlignment="Center" Content="当前时间：" />
-                            <DatePicker SelectedDate="{x:Static sys:DateTime.Now}" />
-                        </DockPanel>
-                        <DockPanel Grid.Row="1">
-                            <Label VerticalAlignment="Center" Content="当前采集：" />
                             <TextBlock
                                 Width="300"
                                 Height="30"
-                                Background="AliceBlue" />
+                                Background="AliceBlue"
+                                Text="{Binding CurTime}" />
+                        </DockPanel>
+
+                        <DockPanel Grid.Row="1">
+                            <Label VerticalAlignment="Center" Content="发送次数：" />
+                            <TextBlock
+                                Width="300"
+                                Height="30"
+                                Background="AliceBlue"
+                                Text="{Binding SendPackets}" />
                         </DockPanel>
                         <DockPanel Grid.Row="2">
-                            <Label VerticalAlignment="Center" Content="当前更新：" />
-                            <TextBlock
-                                Width="300"
-                                Height="30"
-                                Background="AliceBlue" />
-                        </DockPanel>
-                        <DockPanel Grid.Row="3">
-                            <Label VerticalAlignment="Center" Content="采集次数：" />
-                            <TextBlock
-                                Width="300"
-                                Height="30"
-                                Background="AliceBlue" />
-                        </DockPanel>
-                        <DockPanel Grid.Row="4">
                             <Label VerticalAlignment="Center" Content="接收次数：" />
                             <TextBlock
                                 Width="300"
                                 Height="30"
                                 Background="AliceBlue" />
+                            <!--  Text="{Binding RcvPackets}"  -->
                         </DockPanel>
                     </Grid>
 
@@ -201,10 +193,12 @@
                             <TextBox
                                 Width="150"
                                 HorizontalAlignment="Center"
-                                Background="AliceBlue" />
+                                Background="AliceBlue"
+                                Text="{Binding FilePath}" />
                             <Button
                                 Width="80"
                                 HorizontalAlignment="Right"
+                                Command="{Binding ChangePathCommand}"
                                 Content="修改路径" />
                         </DockPanel>
 
@@ -212,14 +206,16 @@
                             <Label
                                 Width="80"
                                 HorizontalContentAlignment="Center"
-                                Content="保存文件 :" />
+                                Content="文件名:" />
                             <TextBox
                                 Width="150"
                                 HorizontalAlignment="Center"
-                                Background="AliceBlue" />
+                                Background="AliceBlue"
+                                Text="{Binding FileName}" />
                             <Button
                                 Width="80"
                                 HorizontalAlignment="Right"
+                                Command="{Binding ChangePathCommand}"
                                 Content="打开路径" />
                         </DockPanel>
 
@@ -227,11 +223,12 @@
                             <Label
                                 Width="80"
                                 HorizontalContentAlignment="Center"
-                                Content="频率 :" />
+                                Content="频率:" />
                             <TextBox
                                 Width="150"
                                 HorizontalAlignment="Center"
-                                Background="AliceBlue" />
+                                Background="AliceBlue"
+                                Text="{Binding SaveFreq}" />
                             <TextBlock
                                 Width="100"
                                 HorizontalAlignment="Right"
@@ -246,12 +243,14 @@
                                 Margin="20,0,0,0"
                                 VerticalAlignment="Center"
                                 HorizontalContentAlignment="Center"
-                                Content="自动存储 :" />
+                                Content="自动存储 :"
+                                IsChecked="{Binding IsAutoSave}" />
 
                             <Button
                                 Width="80"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center"
+                                Command="{Binding SaveOnceCommand}"
                                 Content="单次存储" />
                         </DockPanel>
                     </Grid>
@@ -268,7 +267,7 @@
                             Width="180"
                             HorizontalContentAlignment="Center"
                             VerticalContentAlignment="Center"
-                            Command="{Binding CollectData}"
+                            Command="{Binding CollectDataCommand}"
                             FontSize="20">
                             <Button.Style>
                                 <Style TargetType="Button">
@@ -287,7 +286,10 @@
                                 Content="采集速度:"
                                 FontSize="20" />
 
-                            <TextBox Width="80" Margin="5" />
+                            <TextBox
+                                Width="80"
+                                Margin="5"
+                                Text="{Binding SamplingFreq}" />
 
                             <Label
                                 VerticalContentAlignment="Center"
