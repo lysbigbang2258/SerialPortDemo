@@ -2,9 +2,16 @@
 
 namespace SerialPortDemo.ViewModel
 {
+    using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.IO;
+    using System.Text;
+    using System.Threading;
+
     using GalaSoft.MvvmLight;
     using GalaSoft.MvvmLight.Command;
+
     using SerialPortDemo.Model;
     using SerialPortDemo.View;
 
@@ -13,149 +20,166 @@ namespace SerialPortDemo.ViewModel
     /// </summary>
     public class MasterWindowModel : ViewModelBase
     {
+        #region Field
+
         /// <summary>
         /// The angles content.
         /// </summary>
-        Angles anglesContent;
+        private Angles anglesContent;
 
         /// <summary>
         /// The baud collection binding com-box.
         /// </summary>
-        ObservableCollection<int> baudCollection;
+        private ObservableCollection<int> baudCollection;
 
         /// <summary>
         /// The baud collection item is Selected.
         /// </summary>
-        int baudCollectionItem;
+        private int baudCollectionItem;
 
         /// <summary>
         /// The command changing file name.
         /// </summary>
-        RelayCommand changeFileNameCommand;
+        private RelayCommand changeFileNameCommand;
 
         /// <summary>
         /// The command of changing path.
         /// </summary>
-        RelayCommand changePathCommand;
+        private RelayCommand changePathCommand;
 
         /// <summary>
         /// The command of clear log text.
         /// </summary>
-        RelayCommand clearLogTextCommand;
+        private RelayCommand clearLogTextCommand;
 
         /// <summary>
         /// The command of collecting data.
         /// </summary>
-        RelayCommand collectDataCommand;
+        private RelayCommand collectDataCommand;
 
         /// <summary>
         /// The Com collection binding com-box.
         /// </summary>
-        ObservableCollection<string> comCollection;
+        private ObservableCollection<string> comCollection;
 
         /// <summary>
         ///  The com collection item is Selected.
         /// </summary>
-        string comCollectionItem;
+        private string comCollectionItem;
 
         /// <summary>
         /// The command of saving once  data command.
         /// </summary>
-        RelayCommand coolNSaveCommand;
+        private RelayCommand coolNSaveCommand;
+
+        /// <summary>
+        ///  The Cancellation token.
+        /// </summary>
+        CancellationTokenSource ctTokenSource;
 
         /// <summary>
         /// Now The current time data.
         /// </summary>
-        string curTime;
+        private string curTime;
 
         /// <summary>
         /// The saved file name.
         /// </summary>
-        string fileName;
+        private string fileName;
 
         /// <summary>
         /// The saved file path.
         /// </summary>
-        string filePath;
+        private string filePath;
 
         /// <summary>
         /// The auto save is start or not.
         /// </summary>
-        bool isAutoSave;
+        private bool isAutoSave;
 
         /// <summary>
         /// The serial port is collected data.
         /// </summary>
-        bool isCollected;
+        private bool isCollecting;
 
         /// <summary>
         /// The port is open or not.
         /// </summary>
-        bool isOpenPort;
+        private bool isOpenPort;
 
         /// <summary>
         /// The command of opening serial .
         /// </summary>
-        RelayCommand openSerialCommand;
+        private RelayCommand openSerialCommand;
 
         /// <summary>
         /// The proc unit object.
         /// </summary>
-        DataProcUnit procUnit;
+        private DataProcUnit procUnit;
 
         /// <summary>
         /// The rcv Packets.
         /// </summary>
-        string rcvPackets;
+        private string rcvPackets;
 
         /// <summary>
         /// The rcv data rate.
         /// </summary>
-        string rcvRate;
+        private string rcvRate;
+
+        /// <summary>
+        ///  The receive Sensor data string builder 
+        /// </summary>
+        private StringBuilder rcvStrBuilder;
 
         /// <summary>
         /// The sampling frequency.
         /// </summary>
-        string samplingFreq;
+        private string samplingFreq;
 
         /// <summary>
         /// The save file frequency.
         /// </summary>
-        string saveFreq;
+        private string saveFreq;
 
         /// <summary>
         /// The command of logging text.
         /// </summary>
-        RelayCommand saveLogTextCommand;
+        private RelayCommand saveLogTextCommand;
 
         /// <summary>
         /// The command of selecting on baud com-box.
         /// </summary>
-        RelayCommand selectOnBaudComboxCommand;
+        private RelayCommand selectOnBaudComboxCommand;
 
         /// <summary>
         /// The command of selecting com com-box.
         /// </summary>
-        RelayCommand selectOnComComboxCommand;
+        private RelayCommand selectOnComComboxCommand;
 
         /// <summary>
         /// The send  packets.
         /// </summary>
-        string sendPackets;
+        private string sendPackets;
 
         /// <summary>
         /// The log or command text msg.
         /// </summary>
-        string textMsg;
+        private string textMsg;
+
+        #endregion
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MasterWindowModel"/> class.
         /// </summary>
         public MasterWindowModel()
         {
-            ProcUnit.SendEventHandler += GetDataReached;
+            rcvStrBuilder = new StringBuilder();
             Init();
+            ProcUnit.SendEventHandler += GetDataReached;
         }
+
+        #region Property
 
         /// <summary>
         /// Gets or sets the angles content.
@@ -195,7 +219,7 @@ namespace SerialPortDemo.ViewModel
         /// Gets or sets the change file name.
         /// </summary>
         public RelayCommand ChangeFileNameCommand {
-            get => changeFileNameCommand ?? (changeFileNameCommand = new RelayCommand(execute: ExcuteChangeFileName));
+            get => changeFileNameCommand ?? (changeFileNameCommand = new RelayCommand(execute: ExecuteChangeFileName));
 
             set => changePathCommand = value;
         }
@@ -204,7 +228,7 @@ namespace SerialPortDemo.ViewModel
         /// Gets or sets the change path.
         /// </summary>
         public RelayCommand ChangePathCommand {
-            get => changePathCommand ?? (changePathCommand = new RelayCommand(execute: ExcuteChangePath));
+            get => changePathCommand ?? (changePathCommand = new RelayCommand(execute: ExecuteChangePath));
 
             set => changePathCommand = value;
         }
@@ -213,7 +237,7 @@ namespace SerialPortDemo.ViewModel
         /// Gets or sets the clear log text.
         /// </summary>
         public RelayCommand ClearLogTextCommand {
-            get => clearLogTextCommand ?? (clearLogTextCommand = new RelayCommand(execute: ExcuteClearLogText));
+            get => clearLogTextCommand ?? (clearLogTextCommand = new RelayCommand(execute: ExecuteClearLogText));
 
             set => clearLogTextCommand = value;
         }
@@ -222,10 +246,8 @@ namespace SerialPortDemo.ViewModel
         /// Gets or sets the collect data.
         /// </summary>
         public RelayCommand CollectDataCommand {
-            get => collectDataCommand ?? (collectDataCommand = new RelayCommand(ExcuteCollectData));
-            set {
-                collectDataCommand = value;
-            }
+            get => collectDataCommand ?? (collectDataCommand = new RelayCommand(execute: ExecuteCollectData));
+            set => collectDataCommand = value;
         }
 
         /// <summary>
@@ -301,12 +323,12 @@ namespace SerialPortDemo.ViewModel
         /// <summary>
         /// Gets or sets a value indicating whether is collected.
         /// </summary>
-        public bool IsCollected {
-            get => isCollected;
+        public bool IsCollecting {
+            get => isCollecting;
 
             set {
-                isCollected = value;
-                RaisePropertyChanged(() => IsCollected);
+                isCollecting = value;
+                RaisePropertyChanged(() => IsCollecting);
             }
         }
 
@@ -326,7 +348,7 @@ namespace SerialPortDemo.ViewModel
         /// Gets or sets the open serial.
         /// </summary>
         public RelayCommand OpenSerialCommand {
-            get => openSerialCommand ?? (openSerialCommand = new RelayCommand(execute: ExcuteOpenSerial));
+            get => openSerialCommand ?? (openSerialCommand = new RelayCommand(execute: ExecuteOpenSerial));
 
             set => openSerialCommand = value;
         }
@@ -390,7 +412,7 @@ namespace SerialPortDemo.ViewModel
         /// Gets or sets the save log text.
         /// </summary>
         public RelayCommand SaveLogTextCommand {
-            get => saveLogTextCommand ?? (saveLogTextCommand = new RelayCommand(execute: ExcuteSaveLogText));
+            get => saveLogTextCommand ?? (saveLogTextCommand = new RelayCommand(execute: ExecuteSaveLogText));
 
             set => saveLogTextCommand = value;
         }
@@ -399,7 +421,7 @@ namespace SerialPortDemo.ViewModel
         /// Gets or sets the save once command.
         /// </summary>
         public RelayCommand SaveOnceCommand {
-            get => coolNSaveCommand ?? (coolNSaveCommand = new RelayCommand(execute: ExcuteSaveOnceCommand));
+            get => coolNSaveCommand ?? (coolNSaveCommand = new RelayCommand(execute: ExecuteSaveOnceCommand));
 
             set => coolNSaveCommand = value;
         }
@@ -408,7 +430,7 @@ namespace SerialPortDemo.ViewModel
         /// Gets or sets the selected on baud combox command.
         /// </summary>
         public RelayCommand SelectedOnBaudComboxCommand {
-            get => selectOnBaudComboxCommand ?? (selectOnBaudComboxCommand = new RelayCommand(execute: ExcuteSelectedOnBaundCombox));
+            get => selectOnBaudComboxCommand ?? (selectOnBaudComboxCommand = new RelayCommand(execute: ExecuteSelected_OnBaudCombox));
 
             set => selectOnBaudComboxCommand = value;
         }
@@ -417,7 +439,7 @@ namespace SerialPortDemo.ViewModel
         /// Gets or sets the select on com combox command.
         /// </summary>
         public RelayCommand SelectOnComComboxCommand {
-            get => selectOnComComboxCommand ?? (selectOnComComboxCommand = new RelayCommand(execute: ExcuteSelectedOnComCombox));
+            get => selectOnComComboxCommand ?? (selectOnComComboxCommand = new RelayCommand(execute: ExecuteSelected_OnComCombox));
 
             set => selectOnComComboxCommand = value;
         }
@@ -456,43 +478,62 @@ namespace SerialPortDemo.ViewModel
         }
 
         /// <summary>
-        /// TODO The excute change file name.
+        /// Gets or sets the rcv data list.
         /// </summary>
-        void ExcuteChangeFileName()
+        List<Queue<string>> RcvDataList { get; set; }
+
+        #endregion
+
+        #region Method
+
+        /// <summary>
+        /// TODO The execute change file name.
+        /// </summary>
+        private void ExecuteChangeFileName()
         {
         }
 
         /// <summary>
-        /// TODO The excute change path.
+        /// TODO The execute change path.
         /// </summary>
-        void ExcuteChangePath()
+        private void ExecuteChangePath()
         {
         }
 
         /// <summary>
-        /// TODO The excute clear log text.
+        /// TODO The execute clear log text.
         /// </summary>
-        void ExcuteClearLogText()
+        private void ExecuteClearLogText()
         {
         }
 
         /// <summary>
-        /// The excute collect data.
+        /// The execute collect data.
         /// </summary>
-        void ExcuteCollectData()
+        private void ExecuteCollectData()
         {
-            ProcUnit.StartRcvData();
-            ProcUnit.AutoSendAngle(2);
+            if (!IsCollecting)
+            {
+                IsCollecting = true;
+                ProcUnit.StartRcvData();
+                ProcUnit.AutoSendAngle(ctTokenSource.Token, 2,500);
+            }
+            else
+            {
+                IsCollecting = false;
+                ProcUnit.StopRcvData();
+                ctTokenSource.Cancel();
+            }
         }
 
         /// <summary>
-        /// The excute open serial.
+        /// The execute open serial.
         /// </summary>
-        void ExcuteOpenSerial()
+        private void ExecuteOpenSerial()
         {
             if (!IsOpen)
             {
-                ProcUnit.InitPort(ComCollectionItem, BaudCollectionItem);
+                ProcUnit.InitPort(com: ComCollectionItem, rate: BaudCollectionItem);
                 IsOpen = ProcUnit.OpenPort();
             }
             else
@@ -503,30 +544,33 @@ namespace SerialPortDemo.ViewModel
         }
 
         /// <summary>
-        /// TODO The excute save log text.
+        /// TODO The execute save log text.
         /// </summary>
-        void ExcuteSaveLogText()
+        private void ExecuteSaveLogText()
         {
         }
 
         /// <summary>
-        /// TODO The excute save once command.
+        /// TODO The execute save once command.
         /// </summary>
-        void ExcuteSaveOnceCommand()
+        private void ExecuteSaveOnceCommand()
+        {
+            using (FileStream fs = new FileStream(FilePath + FileName, FileMode.OpenOrCreate))
+            {
+            }
+        }
+
+        /// <summary>
+        /// TODO The execute selected on baud combox.
+        /// </summary>
+        private void ExecuteSelected_OnBaudCombox()
         {
         }
 
         /// <summary>
-        /// TODO The excute selected on baund combox.
+        /// TODO The execute selected on com combox.
         /// </summary>
-        void ExcuteSelectedOnBaundCombox()
-        {
-        }
-
-        /// <summary>
-        /// TODO The excute selected on com combox.
-        /// </summary>
-        void ExcuteSelectedOnComCombox()
+        private void ExecuteSelected_OnComCombox()
         {
         }
 
@@ -539,18 +583,37 @@ namespace SerialPortDemo.ViewModel
         /// <param name="e">
         /// The e.
         /// </param>
-        void GetDataReached(object sender, SensorEventArgs e)
+        private void GetDataReached(object sender, SensorEventArgs e)
         {
+            if (e.Num == 0)
+            {
+                return;
+            }
+
             var num = e.Num;
-            SensorPanelViewModels[num].TextHead = e.Angles.Head.ToString();
-            SensorPanelViewModels[num].TextPitch = e.Angles.Pitch.ToString();
-            SensorPanelViewModels[num].TextRoll = e.Angles.Roll.ToString();
+            string head = e.Angles.Head.ToString();
+            string pitch = e.Angles.Pitch.ToString();
+            string roll = e.Angles.Roll.ToString();
+
+            SensorPanelViewModels[index: num].TextHead = head;
+            SensorPanelViewModels[index: num].TextPitch = pitch;
+            SensorPanelViewModels[index: num].TextRoll = roll;
+
+            rcvStrBuilder.Append("时间: " + DateTime.Now + " ");
+
+            rcvStrBuilder.Append("Head: " + head + " ");
+            rcvStrBuilder.Append("Pitch: " + pitch + " ");
+            rcvStrBuilder.Append("Roll: " + roll + " ");
+
+            RcvDataList[num].Enqueue(rcvStrBuilder.ToString());
+
+            rcvStrBuilder.Clear();
         }
 
         /// <summary>
         /// The init data.
         /// </summary>
-        void Init()
+        private void Init()
         {
             var t = ProcUnit.GetPortNames();
             ComCollection = new ObservableCollection<string>();
@@ -572,7 +635,16 @@ namespace SerialPortDemo.ViewModel
                 SensorPanelViews.Add(item: view);
                 SensorPanelViewModels.Add(item: viewModel);
             }
+
+            ctTokenSource = new CancellationTokenSource();
+
+            RcvDataList = new List<Queue<string>>(8);
+            for (int i = 0; i < 8; i++)
+            {
+                RcvDataList.Add(new Queue<string>());
+            }
         }
+        #endregion
     }
 
     // #endregion

@@ -2,6 +2,7 @@
 
 namespace SerialPortDemo.ViewModel {
     using System;
+    using System.Threading;
 
     using GalaSoft.MvvmLight;
     using GalaSoft.MvvmLight.Command;
@@ -67,8 +68,10 @@ namespace SerialPortDemo.ViewModel {
             set => getAutoParmclickCommand = value;
         }
 
-        void ExcuteGetAutoParmClickCommand() {
-            ProcUnit.AutoSendAngle(2);
+        void ExcuteGetAutoParmClickCommand()
+        {
+            CancellationToken ctToken = new CancellationToken();
+            ProcUnit.AutoSendAngle(ctToken,2);
         }
 
         void ExcuteGetParmClickCommand() {

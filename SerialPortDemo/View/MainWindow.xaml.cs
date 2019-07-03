@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SerialPortDemo {
+namespace SerialPortDemo.View {
     using System;
     using System.Collections.ObjectModel;
     using System.Text;
@@ -25,30 +25,23 @@ namespace SerialPortDemo {
         /// </summary>
         public MainWindow() {
             InitializeComponent();
-            PortCom = new SerialPortCom();
+            DataProc = new DataProcUnit();
             InitPortProperty();
         }
 
-        /// <summary>
-        ///     Gets or sets the PortCom.
-        /// </summary>
-        public SerialPortCom PortCom {
-            get;
-            set;
-        }
+        private DataProcUnit DataProc { get; set; }
 
         /// <summary>
         ///     The init port property.
         /// </summary>
         void InitPortProperty() {
-            if (!PortCom.InitSerialPort("COM3", 19200)) {
+            if (!DataProc.InitPort("COM3", 19200)) {
                 MessageBox.Show("端口未连接");
             }
 
-            PortCom.RcvEventHandler += Port_RcvByteReached;
             var baudRateCollection = new ObservableCollection<int> { 2400, 4800, 9600, 19200, 38400, 38400, 57600, 115200 };
 
-            combPort.ItemsSource = PortCom.GetPortNames();
+            combPort.ItemsSource = DataProc.GetPortNames();
             combPort.SelectedIndex = 0;
             
             combBaudRate.ItemsSource = baudRateCollection;
@@ -88,8 +81,8 @@ namespace SerialPortDemo {
         /// </param>
         void BtOpenOrClose_OnClick(object sender, RoutedEventArgs e) {
             if (btOpenOrClose.Content.ToString() == "停止") {
-                if (PortCom.IsOpen) {
-                    PortCom.CloseSerialPort();
+                if (DataProc.IsPortOpen) {
+                    DataProc.ClosePort();
                     btOpenOrClose.Content = "连接";
                     labelConnect.Content = "关闭";
                 }
@@ -98,8 +91,8 @@ namespace SerialPortDemo {
                 }
             }
             else if (btOpenOrClose.Content.ToString() == "连接") {
-                if (!PortCom.IsOpen) {
-                    PortCom.OpenSerialPort();
+                if (!DataProc.IsPortOpen) {
+                    DataProc.OpenPort();
                     btOpenOrClose.Content = "停止";
                     labelConnect.Content = "已开启";
                 }
@@ -122,7 +115,7 @@ namespace SerialPortDemo {
         ///     The e.
         /// </param>
         void BtnSend_OnClick(object sender, RoutedEventArgs e) {
-            PortCom.SendData(tbSend.Text);
+            // DataProc.SendData(,tbSend.Text);
         }
 
         /// <summary>

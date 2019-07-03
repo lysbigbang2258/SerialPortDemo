@@ -273,7 +273,7 @@
                                 <Style TargetType="Button">
                                     <Setter Property="Content" Value="开始采集" />
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsCollected}" Value="True">
+                                        <DataTrigger Binding="{Binding IsCollecting}" Value="True">
                                             <Setter Property="Content" Value="关闭采集" />
                                         </DataTrigger>
                                     </Style.Triggers>
