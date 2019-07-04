@@ -92,20 +92,6 @@ namespace SerialPortDemo.ViewModel
         /// </summary>
         private string filePath;
 
-        /// <summary>
-        /// The auto save is start or not.
-        /// </summary>
-        private bool isAutoSave;
-
-        /// <summary>
-        /// The serial port is collected data.
-        /// </summary>
-        private bool isCollecting;
-
-        /// <summary>
-        /// The port is open or not.
-        /// </summary>
-        private bool isOpenPort;
 
         /// <summary>
         /// The command of opening serial .
@@ -118,29 +104,10 @@ namespace SerialPortDemo.ViewModel
         private DataProcUnit procUnit;
 
         /// <summary>
-        /// The rcv Packets.
-        /// </summary>
-        private string rcvPackets;
-
-        /// <summary>
-        /// The rcv data rate.
-        /// </summary>
-        private string rcvRate;
-
-        /// <summary>
         ///  The receive Sensor data string builder 
         /// </summary>
         private StringBuilder rcvStrBuilder;
 
-        /// <summary>
-        /// The sampling frequency.
-        /// </summary>
-        private string samplingFreq;
-
-        /// <summary>
-        /// The save file frequency.
-        /// </summary>
-        private string saveFreq;
 
         /// <summary>
         /// The command of logging text.
@@ -157,10 +124,6 @@ namespace SerialPortDemo.ViewModel
         /// </summary>
         private RelayCommand selectOnComComboxCommand;
 
-        /// <summary>
-        /// The send  packets.
-        /// </summary>
-        private string sendPackets;
 
         /// <summary>
         /// The log or command text msg.
@@ -181,16 +144,6 @@ namespace SerialPortDemo.ViewModel
 
         #region Property
 
-        /// <summary>
-        /// Gets or sets the angles content.
-        /// </summary>
-        public Angles AnglesContent {
-            get => anglesContent;
-            set {
-                anglesContent = value;
-                RaisePropertyChanged(() => AnglesContent);
-            }
-        }
 
         /// <summary>
         /// Gets or sets the baud collection.
@@ -309,42 +262,6 @@ namespace SerialPortDemo.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether is auto save.
-        /// </summary>
-        public bool IsAutoSave {
-            get => isAutoSave;
-
-            set {
-                isAutoSave = value;
-                RaisePropertyChanged(() => IsAutoSave);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether is collected.
-        /// </summary>
-        public bool IsCollecting {
-            get => isCollecting;
-
-            set {
-                isCollecting = value;
-                RaisePropertyChanged(() => IsCollecting);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether is open.
-        /// </summary>
-        public bool IsOpen {
-            get => isOpenPort;
-
-            set {
-                isOpenPort = value;
-                RaisePropertyChanged(() => IsOpen);
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the open serial.
         /// </summary>
         public RelayCommand OpenSerialCommand {
@@ -357,54 +274,10 @@ namespace SerialPortDemo.ViewModel
         /// Gets or sets the proc unit.
         /// </summary>
         public DataProcUnit ProcUnit {
-            get => procUnit ?? (procUnit = new DataProcUnit());
-            set => procUnit = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the rcv packets.
-        /// </summary>
-        public string RcvPackets {
-            get => rcvPackets;
-
+            get => procUnit;
             set {
-                rcvPackets = value;
-                RaisePropertyChanged(() => RcvPackets);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the rcv rate.
-        /// </summary>
-        public string RcvRate {
-            get => rcvRate;
-
-            set {
-                rcvRate = value;
-                RaisePropertyChanged(() => RcvRate);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the sampling freq.
-        /// </summary>
-        public string SamplingFreq {
-            get => samplingFreq;
-
-            set {
-                samplingFreq = value;
-                RaisePropertyChanged(() => SamplingFreq);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the save freq.
-        /// </summary>
-        public string SaveFreq {
-            get => saveFreq;
-            set {
-                saveFreq = value;
-                RaisePropertyChanged(() => SaveFreq);
+                procUnit = value;
+                RaisePropertyChanged(() => procUnit);
             }
         }
 
@@ -442,18 +315,6 @@ namespace SerialPortDemo.ViewModel
             get => selectOnComComboxCommand ?? (selectOnComComboxCommand = new RelayCommand(execute: ExecuteSelected_OnComCombox));
 
             set => selectOnComComboxCommand = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the send packets.
-        /// </summary>
-        public string SendPackets {
-            get => sendPackets;
-
-            set {
-                sendPackets = value;
-                RaisePropertyChanged(() => SendPackets);
-            }
         }
 
         /// <summary>
@@ -512,17 +373,18 @@ namespace SerialPortDemo.ViewModel
         /// </summary>
         private void ExecuteCollectData()
         {
-            if (!IsCollecting)
+            if (!ProcUnit.IsCollecting)
             {
-                IsCollecting = true;
+                ProcUnit.IsCollecting = true;
+                ctTokenSource = new CancellationTokenSource();
                 ProcUnit.StartRcvData();
                 ProcUnit.AutoSendAngle(ctTokenSource.Token, 2,500);
             }
             else
             {
-                IsCollecting = false;
+                ProcUnit.IsCollecting = false;
                 ProcUnit.StopRcvData();
-                ctTokenSource.Cancel();
+                ctTokenSource.Cancel(true);
             }
         }
 
@@ -531,15 +393,16 @@ namespace SerialPortDemo.ViewModel
         /// </summary>
         private void ExecuteOpenSerial()
         {
-            if (!IsOpen)
+            if (!ProcUnit.IsOpenPort)
             {
+                ProcUnit.IsOpenPort = true;
                 ProcUnit.InitPort(com: ComCollectionItem, rate: BaudCollectionItem);
-                IsOpen = ProcUnit.OpenPort();
+                ProcUnit.OpenPort();
             }
             else
             {
-                IsOpen = false;
                 ProcUnit.ClosePort();
+                ProcUnit.IsOpenPort = false;
             }
         }
 
@@ -615,6 +478,7 @@ namespace SerialPortDemo.ViewModel
         /// </summary>
         private void Init()
         {
+            ProcUnit = new DataProcUnit();
             var t = ProcUnit.GetPortNames();
             ComCollection = new ObservableCollection<string>();
             foreach (string s in t)
@@ -635,8 +499,6 @@ namespace SerialPortDemo.ViewModel
                 SensorPanelViews.Add(item: view);
                 SensorPanelViewModels.Add(item: viewModel);
             }
-
-            ctTokenSource = new CancellationTokenSource();
 
             RcvDataList = new List<Queue<string>>(8);
             for (int i = 0; i < 8; i++)

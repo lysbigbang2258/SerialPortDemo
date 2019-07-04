@@ -81,7 +81,7 @@ namespace SerialPortDemo.View {
         /// </param>
         void BtOpenOrClose_OnClick(object sender, RoutedEventArgs e) {
             if (btOpenOrClose.Content.ToString() == "停止") {
-                if (DataProc.IsPortOpen) {
+                if (DataProc.IsOpenPort) {
                     DataProc.ClosePort();
                     btOpenOrClose.Content = "连接";
                     labelConnect.Content = "关闭";
@@ -91,7 +91,7 @@ namespace SerialPortDemo.View {
                 }
             }
             else if (btOpenOrClose.Content.ToString() == "连接") {
-                if (!DataProc.IsPortOpen) {
+                if (!DataProc.IsOpenPort) {
                     DataProc.OpenPort();
                     btOpenOrClose.Content = "停止";
                     labelConnect.Content = "已开启";

@@ -55,7 +55,7 @@
 //             // Assert
 //             Assert.True(result);
 //
-//             // Assert.True(!unitUnderTest.IsPortOpen);
+//             // Assert.True(!unitUnderTest.IsOpenPort);
 //         }
 //
 //         [Fact]

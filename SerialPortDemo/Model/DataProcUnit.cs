@@ -4,16 +4,18 @@ namespace SerialPortDemo.Model {
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.IO.Ports;
     using System.Threading;
     using System.Threading.Tasks;
 
+    using GalaSoft.MvvmLight;
+
     /// <summary>
     ///     The rcv data proc.
     /// </summary>
-    public class DataProcUnit {
-        #region Filed  Init  Property
+    public class DataProcUnit : ObservableObject
+    {
+        #region Filed
 
         /// <summary>
         ///  The All ports name.
@@ -21,14 +23,38 @@ namespace SerialPortDemo.Model {
         string[] portsNames;
 
         /// <summary>
-        ///     The my serial port resource.
+        ///   The my serial port resource.
         /// </summary>
         SerialPort mySerialPort;
 
         /// <summary>
-        ///     The rcv data lock.
+        /// The rcv data lock.
         /// </summary>
         private object rcvLock;
+
+        private bool isCollecting;
+
+        private Angles anglesContent;
+
+        private bool isOpenPortPort;
+
+        private int rcvPackets;
+
+        private int rcvRate;
+
+        private int samplingFreq;
+
+        private int saveFreq;
+
+        private int sendPackets;
+
+        private bool isAutoSave;
+
+        /// <summary>
+        ///     The rcv event handler.
+        /// </summary>
+        public event EventHandler<SensorEventArgs> SendEventHandler;
+        #endregion
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="DataProcUnit" /> class.
@@ -39,11 +65,111 @@ namespace SerialPortDemo.Model {
             Init();
         }
 
+        #region Property
+
         /// <summary>
-        /// Gets a value indicating whether is open.
+        /// Gets or sets a value indicating whether is open.
         /// </summary>
-        public bool IsPortOpen {
-            get => mySerialPort.IsOpen;
+        public bool IsOpenPort {
+            get => isOpenPortPort;
+
+            set {
+                isOpenPortPort = value;
+                RaisePropertyChanged(() => IsOpenPort);
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether is Collect.
+        /// </summary>
+        public bool IsCollecting {
+            get => isCollecting;
+            set {
+                isCollecting = value;
+                RaisePropertyChanged(() => IsCollecting);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether is auto save.
+        /// </summary>
+        public bool IsAutoSave {
+            get => isAutoSave;
+
+            set {
+                isAutoSave = value;
+                RaisePropertyChanged(() => IsAutoSave);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the angles content.
+        /// </summary>
+        public Angles AnglesContent {
+            get => anglesContent;
+            set {
+                anglesContent = value;
+                RaisePropertyChanged(() => AnglesContent);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the rcv packets.
+        /// </summary>
+        public int RcvPackets {
+            get => rcvPackets;
+
+            set {
+                rcvPackets = value;
+                RaisePropertyChanged(() => RcvPackets);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the rcv rate.
+        /// </summary>
+        public int RcvRate {
+            get => rcvRate;
+
+            set {
+                rcvRate = value;
+                RaisePropertyChanged(() => RcvRate);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the sampling freq.
+        /// </summary>
+        public int SamplingFreq {
+            get => samplingFreq;
+
+            set {
+                samplingFreq = value;
+                RaisePropertyChanged(() => SamplingFreq);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the save freq.
+        /// </summary>
+        public int SaveFreq {
+            get => saveFreq;
+            set {
+                saveFreq = value;
+                RaisePropertyChanged(() => SaveFreq);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the send packets.
+        /// </summary>
+        public int SendPackets {
+            get => sendPackets;
+
+            set {
+                sendPackets = value;
+                RaisePropertyChanged(() => SendPackets);
+            }
         }
 
         /// <summary>
@@ -59,12 +185,6 @@ namespace SerialPortDemo.Model {
         List<byte> RcvList {
             get;
         }
-
-        /// <summary>
-        ///     The rcv event handler.
-        /// </summary>
-        [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Reviewed. Suppression is OK here.")]
-        public event EventHandler<SensorEventArgs> SendEventHandler;
 
         #endregion
 
@@ -88,7 +208,14 @@ namespace SerialPortDemo.Model {
         /// </returns>
         public bool StartRcvData()
         {
-            return true;
+            if (IsOpenPort && IsCollecting)
+            {
+                IsCollecting = true;
+                mySerialPort.DataReceived += PortRcvByteReached;
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -99,7 +226,13 @@ namespace SerialPortDemo.Model {
         /// </returns>
         public bool StopRcvData()
         {
-            return true;
+            if (IsCollecting)
+            {
+                IsCollecting = false;
+                mySerialPort.DataReceived -= PortRcvByteReached;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -159,14 +292,15 @@ namespace SerialPortDemo.Model {
             byte[] angle = { 0x77, 0x04, 0x00, 0x04, 0x08 };
             angle[2] += (byte)index;
             angle[4] += (byte)index;
-            Timer timer = new Timer(SendCommand, angle, dual, period);
+            Timer timer = new Timer(SendCommand, angle, Timeout.Infinite, period);
             Task.Run(
                 () =>
                     {
                         try
                         {
-                            timer.Change(dual, period);
                             token.ThrowIfCancellationRequested();
+                            timer.Change(0, period);
+                            
                         }
                         catch (Exception e)
                         {
@@ -174,7 +308,6 @@ namespace SerialPortDemo.Model {
                             timer.Dispose();
                             throw;
                         }
-                        
                     },
                 token);
         }
@@ -183,9 +316,18 @@ namespace SerialPortDemo.Model {
             {
                 var angle = obj is byte[] ? (byte[])obj : default;
 
-                if (IsPortOpen)
+                if (IsOpenPort)
                 {
-                    SendData(angle);
+                    try
+                    {
+                        SendData(angle);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        throw;
+                    }
+                    
                 }
             }
 
@@ -309,8 +451,6 @@ namespace SerialPortDemo.Model {
         public bool OpenPort() {
             try {
                 mySerialPort.Open();
-                mySerialPort.DataReceived += PortRcvByteReached;
-                
                 return true;
             }
             catch (Exception e) {
@@ -354,7 +494,7 @@ namespace SerialPortDemo.Model {
                                    RcvCQueue.TryDequeue(out result);
                                    Angles angles = new Angles(0, 0, 0);
                                    GetRcvData(result, out angles);
-                                   if (result != null) {
+                                   if (result != null && IsCollecting) {
                                        int index = result[2];
                                        OnSendEventHandler(new SensorEventArgs(angles, index));
                                    }
