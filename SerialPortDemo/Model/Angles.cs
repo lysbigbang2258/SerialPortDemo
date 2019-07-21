@@ -1,11 +1,19 @@
-﻿// 
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Angles.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The angles.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace SerialPortDemo.Model {
     /// <summary>
     ///     The angles.
     /// </summary>
     public struct Angles {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Angles" /> struct.
+        ///    Initializes a new instance of the <see cref="Angles" /> struct.
         /// </summary>
         /// <param name="head">
         ///     The head.
@@ -23,27 +31,24 @@ namespace SerialPortDemo.Model {
         }
 
         /// <summary>
-        ///     Gets the head.
+        /// Gets the head.
         /// </summary>
         public double Head {
             get;
-            set;
         }
 
         /// <summary>
-        ///     Gets the pitch.
+        /// Gets the pitch.
         /// </summary>
         public double Pitch {
             get;
-            set;
         }
 
         /// <summary>
-        ///     Gets the roll.
+        ///   Gets the roll.
         /// </summary>
         public double Roll {
             get;
-            set;
         }
     }
 }

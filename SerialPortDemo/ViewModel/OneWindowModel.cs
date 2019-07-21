@@ -1,6 +1,7 @@
 ﻿// 2019062014:31
 
-namespace SerialPortDemo.ViewModel {
+namespace SerialPortDemo.ViewModel
+{
     using System;
     using System.Threading;
 
@@ -13,21 +14,23 @@ namespace SerialPortDemo.ViewModel {
     /// <summary>
     ///     The one window model.
     /// </summary>
-    public class OneWindowModel : ViewModelBase {
+    public class OneWindowModel : ViewModelBase
+    {
         /// <summary>
         ///     The sensor data.
         /// </summary>
-        SensorDataModel sensordata;
+        private SensorDataModel sensordata;
 
-        RelayCommand startclickCommand;
+        private RelayCommand startclickCommand;
 
-        RelayCommand getParmclickCommand;
+        private RelayCommand getParmclickCommand;
 
-        RelayCommand getAutoParmclickCommand;
+        private RelayCommand getAutoParmclickCommand;
 
-        bool isOpen;
+        private bool isOpen;
 
-        public OneWindowModel() {
+        public OneWindowModel()
+        {
             isOpen = false;
             SensorData = new SensorDataModel();
         }
@@ -43,10 +46,7 @@ namespace SerialPortDemo.ViewModel {
             }
         }
 
-        public DataProcUnit ProcUnit {
-            get;
-            set;
-        }
+        public DataProcUnit ProcUnit { get; set; }
 
         #region 命令
 
@@ -58,53 +58,72 @@ namespace SerialPortDemo.ViewModel {
 
         public RelayCommand BtnGetParmclickCommand {
             get => getParmclickCommand ?? (getParmclickCommand = new RelayCommand(execute: ExcuteGetParmClickCommand));
-            
+
             set => getParmclickCommand = value;
         }
 
         public RelayCommand BtnGetAutoParmclickCommand {
             get => getAutoParmclickCommand ?? (getParmclickCommand = new RelayCommand(execute: ExcuteGetAutoParmClickCommand));
-            
+
             set => getAutoParmclickCommand = value;
         }
 
-        void ExcuteGetAutoParmClickCommand()
+        private void ExcuteGetAutoParmClickCommand()
         {
             CancellationToken ctToken = new CancellationToken();
-            ProcUnit.AutoSendAngle(ctToken,2);
         }
 
-        void ExcuteGetParmClickCommand() {
-            ProcUnit.SendAngleCommand(2);
+        private void ExcuteGetParmClickCommand()
+        {
+            ProcUnit.IsCollected = true;
+            ProcUnit.SendCommand(1);
         }
 
-        void ExcuteStartClickCommand() {
-            if (!isOpen) {
+        private void ExcuteStartClickCommand()
+        {
+            if (!isOpen)
+            {
                 isOpen = true;
                 ProcUnit = new DataProcUnit();
-                ProcUnit.InitPort();
+                ProcUnit.SetPortParam();
                 ProcUnit.OpenPort();
                 ProcUnit.StartRcvData();
                 ProcUnit.SendEventHandler += AnglesGetReached;
                 Messenger.Default.Send("关闭串口", "ContentChanged"); // 注意：token参数一致   
             }
-            else {
+            else
+            {
                 ProcUnit.ClosePort();
                 Messenger.Default.Send("打开串口", "ContentChanged"); // 注意：token参数一致
             }
         }
 
-        void AnglesGetReached(object sender, SensorEventArgs e) {
-            if (e.Num == 2) {
-                try {
-                    SensorData.Head = e.Angles.Head.ToString();
-                    SensorData.Roll = e.Angles.Roll.ToString();
-                    SensorData.Pitch = e.Angles.Pitch.ToString();
+        /// <summary>
+        /// The angles get reached.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void AnglesGetReached(object sender, SensorEventArgs e)
+        {
+            try
+            {
+                if (e.Num == 0)
+                {
+                    return;
                 }
-                catch(Exception exception) {
-                    Console.WriteLine(value: exception);
-                    throw;
-                }
+
+                SensorData.Head = e.Angles.Head.ToString();
+                SensorData.Roll = e.Angles.Roll.ToString();
+                SensorData.Pitch = e.Angles.Pitch.ToString();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(value: exception);
+                throw;
             }
         }
 

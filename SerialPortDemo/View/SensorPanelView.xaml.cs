@@ -19,11 +19,10 @@ namespace SerialPortDemo.View {
         /// Initializes a new instance of the <see cref="SensorPanelView"/> class.
         /// </summary>
         /// <param name="viewModel">
-        /// TODO The view model.
+        /// The SensorPanel view model.
         /// </param>
         public SensorPanelView(SensorPanelViewModel viewModel) {
             InitializeComponent();
-
             DataContext = viewModel;
         }
     }

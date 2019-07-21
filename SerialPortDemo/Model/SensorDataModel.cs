@@ -7,51 +7,60 @@ namespace SerialPortDemo.Model {
     /// The sensor data model.
     /// </summary>
     public class SensorDataModel : ObservableObject {
-
+        /// <summary>
+        /// The head.
+        /// </summary>
         string head;
 
+        /// <summary>
+        /// The pitch.
+        /// </summary>
         string pitch;
 
+        /// <summary>
+        /// The roll.
+        /// </summary>
         string roll;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SensorDataModel" /> class.
+        /// Gets or sets the head.
         /// </summary>
-        public SensorDataModel() {
-          
-        }
-
-
         public string Head {
             get {
-
                 return head;
             }
+
             set {
                 head = value;
                 RaisePropertyChanged(() => Head);
             }
         }
 
+        /// <summary>
+        /// Gets or sets the pitch.
+        /// </summary>
         public string Pitch {
             get {
                 return pitch;
             }
+
             set {
                 pitch = value;
                 RaisePropertyChanged(() => Pitch);
-
             }
         }
 
+        /// <summary>
+        /// Gets or sets the roll.
+        /// </summary>
         public string Roll {
             get {
                 return roll;
             }
-            set{
+
+            set {
                 roll = value;
                 RaisePropertyChanged(() => Roll);
-
             }
         }
     }

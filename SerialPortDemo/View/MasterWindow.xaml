@@ -17,6 +17,14 @@
     TextOptions.TextRenderingMode="Auto"
     mc:Ignorable="d">
 
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="DictionaryOne.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
     <Grid Background="#FFBED5E9">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -194,7 +202,7 @@
                                 Width="150"
                                 HorizontalAlignment="Center"
                                 Background="AliceBlue"
-                                Text="{Binding FilePath}" />
+                                Text="{Binding FilePath, Mode=TwoWay}" />
                             <Button
                                 Width="80"
                                 HorizontalAlignment="Right"
@@ -211,7 +219,7 @@
                                 Width="150"
                                 HorizontalAlignment="Center"
                                 Background="AliceBlue"
-                                Text="{Binding FileName}" />
+                                Text="{Binding FileName, Mode=TwoWay}" />
                             <Button
                                 Width="80"
                                 HorizontalAlignment="Right"
@@ -251,7 +259,7 @@
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center"
                                 Command="{Binding SaveOnceCommand}"
-                                Content="单次存储" />
+                                Content="手动存储" />
                         </DockPanel>
                     </Grid>
 
@@ -265,6 +273,7 @@
                     <DockPanel>
                         <Button
                             Width="180"
+                            Height="30"
                             HorizontalContentAlignment="Center"
                             VerticalContentAlignment="Center"
                             Command="{Binding CollectDataCommand}"
@@ -273,7 +282,7 @@
                                 <Style TargetType="Button">
                                     <Setter Property="Content" Value="开始采集" />
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ProcUnit.IsCollecting}" Value="True">
+                                        <DataTrigger Binding="{Binding IsCollecting}" Value="True">
                                             <Setter Property="Content" Value="关闭采集" />
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -281,6 +290,14 @@
                             </Button.Style>
                         </Button>
                         <DockPanel>
+
+                            <CheckBox
+                                Margin="10,0,0,0"
+                                VerticalContentAlignment="Center"
+                                Content="单次采集"
+                                FontSize="15"
+                                IsChecked="{Binding IsSingleSend, Mode=TwoWay}"
+                                Style="{DynamicResource CheckBox_WithContent}" />
                             <Label
                                 VerticalContentAlignment="Center"
                                 Content="采集速度:"
@@ -303,7 +320,7 @@
                     Name="gridSensors"
                     Grid.Row="2"
                     Margin="5">
-                    <StackPanel Width="700" HorizontalAlignment="Left">
+                    <StackPanel HorizontalAlignment="Left">
                         <ItemsControl
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"

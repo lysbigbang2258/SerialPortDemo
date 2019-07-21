@@ -12,13 +12,6 @@
         public MasterWindow()
         {
             InitializeComponent();
-            SensorPanels = new List<SensorPanelView>();
         }
-
-        public List<SensorPanelView> SensorPanels {
-            get;
-            set;
-        }
-
     }
 }

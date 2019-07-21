@@ -94,9 +94,9 @@
 //             int t3 = 11;
 //
 //             // Act
-//             var result0 = unitUnderTest.SendAngleCommand(t1);
-//             var result1 = unitUnderTest.SendAngleCommand(t2);
-//             var result2 = unitUnderTest.SendAngleCommand(t3);
+//             var result0 = unitUnderTest.SendCommand(t1);
+//             var result1 = unitUnderTest.SendCommand(t2);
+//             var result2 = unitUnderTest.SendCommand(t3);
 //
 //             // Assert
 //             Assert.True(result0);

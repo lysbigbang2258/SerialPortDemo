@@ -35,7 +35,7 @@ namespace SerialPortDemo.View {
         ///     The init port property.
         /// </summary>
         void InitPortProperty() {
-            if (!DataProc.InitPort("COM3", 19200)) {
+            if (!DataProc.SetPortParam("COM3", 19200)) {
                 MessageBox.Show("端口未连接");
             }
 
@@ -115,7 +115,7 @@ namespace SerialPortDemo.View {
         ///     The e.
         /// </param>
         void BtnSend_OnClick(object sender, RoutedEventArgs e) {
-            // DataProc.SendData(,tbSend.Text);
+            // DataProc.SendBytes(,tbSend.Text);
         }
 
         /// <summary>

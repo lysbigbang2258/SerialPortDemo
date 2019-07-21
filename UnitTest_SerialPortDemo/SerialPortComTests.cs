@@ -149,7 +149,7 @@
 //             bool result0 = unitUnderTest.InitSerialPort(name, baudRate);
 //             bool result1 = unitUnderTest.OpenSerialPort();
 //             // Act
-//             bool result = unitUnderTest.SendAngleCommand();
+//             bool result = unitUnderTest.SendCommand();
 //
 //             // Assert
 //             Assert.True(result);
@@ -168,10 +168,10 @@
 //             unitUnderTest.OpenSerialPort();
 //
 //             // Act
-//             bool result = unitUnderTest.SendData(str);
+//             bool result = unitUnderTest.SendBytes(str);
 //
 //             unitUnderTest.CloseSerialPort();
-//             bool result1 = unitUnderTest.SendData(str);
+//             bool result1 = unitUnderTest.SendBytes(str);
 //
 //             // Assert
 //             Assert.True(result);

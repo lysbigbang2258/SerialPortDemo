@@ -86,6 +86,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\Angles.cs" />
+    <Compile Include="Model\SaveEventArgs.cs" />
     <Compile Include="Model\SensorDataModel.cs" />
     <Compile Include="Model\SensorEventArgs.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -99,7 +100,6 @@
     <Compile Include="View\OneWindow.xaml.cs">
       <DependentUpon>OneWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\PortCommand.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -109,9 +109,13 @@
     <Compile Include="View\SensorPanelView.xaml.cs">
       <DependentUpon>SensorPanelView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\TestWindow.xaml.cs">
-      <DependentUpon>TestWindow.xaml</DependentUpon>
+    <Compile Include="View\UserControl1.xaml.cs">
+      <DependentUpon>UserControl1.xaml</DependentUpon>
     </Compile>
+    <Page Include="View\DictionaryOne.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -136,7 +140,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\TestWindow.xaml">
+    <Page Include="View\UserControl1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
