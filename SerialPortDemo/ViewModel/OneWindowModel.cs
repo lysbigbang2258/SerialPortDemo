@@ -70,7 +70,6 @@ namespace SerialPortDemo.ViewModel
 
         private void ExcuteGetAutoParmClickCommand()
         {
-            CancellationToken ctToken = new CancellationToken();
         }
 
         private void ExcuteGetParmClickCommand()

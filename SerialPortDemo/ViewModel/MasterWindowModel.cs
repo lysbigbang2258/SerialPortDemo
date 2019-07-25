@@ -3,7 +3,6 @@
 namespace SerialPortDemo.ViewModel
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.IO;
@@ -139,9 +138,14 @@ namespace SerialPortDemo.ViewModel
         private bool isStartSaveFile;
 
         /// <summary>
-        /// The save event handler.
+        /// The grid sensors width.
         /// </summary>
-        public event EventHandler<SaveEventArgs> SaveEventHandler;
+        private int gridSensorsWidth;
+
+        /// <summary>
+        /// The saveFile time str.
+        /// </summary>
+        private string timeStr;
 
         #endregion
 
@@ -380,24 +384,30 @@ namespace SerialPortDemo.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets the rcv data list.
+        /// Gets or sets the grid sensors width.
         /// </summary>
-        private List<ConcurrentQueue<string>> RcvDataList { get; set; }
+        public int GridSensorsWidth {
+            get => gridSensorsWidth;
+            set {
+                gridSensorsWidth = value;
+                RaisePropertyChanged(() => GridSensorsWidth);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the start save file.
+        /// </summary>
+        public bool IsStartSaveFile {
+            get => isStartSaveFile;
+            set {
+                isStartSaveFile = value;
+                RaisePropertyChanged(() => IsStartSaveFile);
+            }
+        }
 
         #endregion
 
         #region Method
-
-        /// <summary>
-        ///     The on save event handler.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
-        private void OnSaveEventHandler(SaveEventArgs args)
-        {
-            SaveEventHandler?.Invoke(this, e: args);
-        }
 
         /// <summary>
         ///     The save string data.
@@ -408,20 +418,44 @@ namespace SerialPortDemo.ViewModel
         /// <param name="e">
         ///     The e.
         /// </param>
-        private void SaveStringData(object sender, SaveEventArgs e)
+        private void SaveStringData(object sender, SensorEventArgs e)
         {
             if (e == null)
             {
                 return;
             }
-            
-            int num = e.Num;
 
-            string data = e.Data;
-
-            using (StreamWriter streamWriter = new StreamWriter(FilePath + "\\" + FileName + num, true))
+            try
             {
-                streamWriter.Write(value: data);
+                int num = e.Num;
+                Angles angles = e.Angles;
+
+                string head = angles.Head.ToString();
+                string pitch = angles.Pitch.ToString();
+                string roll = angles.Roll.ToString();
+
+                Console.WriteLine("UI Data OK" + head + pitch + roll);
+
+                rcvStrBuilder.Append("Time: " + DateTime.Now + " ");
+                rcvStrBuilder.Append("Head: " + head + " ");
+                rcvStrBuilder.Append("Pitch: " + pitch + " ");
+                rcvStrBuilder.Append("Roll: " + roll + " ");
+                rcvStrBuilder.Append("\n");
+
+                string data = rcvStrBuilder.ToString();
+                rcvStrBuilder.Clear();
+                using (FileStream fs = new FileStream(FilePath + "\\" + FileName + num + "__" + timeStr + ".txt", FileMode.Append, FileAccess.Write))
+                {
+                    using (StreamWriter streamWriter = new StreamWriter(fs, Encoding.Default))
+                    {
+                        streamWriter.Write(value: data);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                throw;
             }
         }
 
@@ -480,6 +514,7 @@ namespace SerialPortDemo.ViewModel
                 }
                 else
                 {
+                    ProcUnit.InitDefaultProperty();
                     ProcUnit.StartAutoCollectData(addresses: addressDictionary);
                     IsCollecting = true;
                 }
@@ -522,15 +557,34 @@ namespace SerialPortDemo.ViewModel
         /// </summary>
         private void ExecuteSaveOnceCommand()
         {
-            if (!isStartSaveFile)
+            if (!IsStartSaveFile)
             {
-                isStartSaveFile = true;
-                SaveEventHandler += SaveStringData;
+                IsStartSaveFile = true;
+
+                DateTime dt = DateTime.Now;
+                StringBuilder fileSb = new StringBuilder();
+
+                fileSb.Append(dt.Year.ToString("d4"));
+                fileSb.Append("-");
+                fileSb.Append(dt.Month.ToString("d2"));
+                fileSb.Append("-");
+                fileSb.Append(dt.Day.ToString("d2"));
+                fileSb.Append("-");
+                fileSb.Append(dt.Hour.ToString("d2"));
+                fileSb.Append("-");
+                fileSb.Append(dt.Minute.ToString("d2"));
+                fileSb.Append("-");
+                fileSb.Append(dt.Second.ToString("d2"));
+                fileSb.Append("-");
+                fileSb.Append(dt.Millisecond.ToString("d2"));
+
+                timeStr = fileSb.ToString();
+                ProcUnit.SaveEventHandler += SaveStringData;
             }
             else
             {
-                isStartSaveFile = false;
-                SaveEventHandler -= SaveStringData;
+                IsStartSaveFile = false;
+                ProcUnit.SaveEventHandler -= SaveStringData;
             }
         }
 
@@ -577,18 +631,6 @@ namespace SerialPortDemo.ViewModel
                 SensorPanelViewModels[index: num].TextHead = head;
                 SensorPanelViewModels[index: num].TextPitch = pitch;
                 SensorPanelViewModels[index: num].TextRoll = roll;
-
-                Console.WriteLine("UI Data OK" + head + pitch + roll);
-
-                rcvStrBuilder.Append("Time: " + DateTime.Now + " ");
-                rcvStrBuilder.Append("Head: " + head + " ");
-                rcvStrBuilder.Append("Pitch: " + pitch + " ");
-                rcvStrBuilder.Append("Roll: " + roll + " ");
-                rcvStrBuilder.Append("\n");
-
-                OnSaveEventHandler(new SaveEventArgs(num: num, rcvStrBuilder.ToString()));
-
-                rcvStrBuilder.Clear();
             }
             catch (Exception exception)
             {
@@ -602,7 +644,7 @@ namespace SerialPortDemo.ViewModel
         /// </summary>
         private void Init()
         {
-            ProcUnit = new DataProcUnit();
+            ProcUnit = new DataProcUnit { SamplingFreq = 100 };
 
             addressDictionary = new Dictionary<int, bool>();
             var t = ProcUnit.GetPortNames();
@@ -616,7 +658,6 @@ namespace SerialPortDemo.ViewModel
 
             SensorPanelViews = new ObservableCollection<SensorPanelView>();
             SensorPanelViewModels = new ObservableCollection<SensorPanelViewModel>();
-
             for (int i = 0; i < 8; i++)
             {
                 string str = (i + 1).ToString();
@@ -625,13 +666,6 @@ namespace SerialPortDemo.ViewModel
                 SensorPanelView view = new SensorPanelView(viewModel: viewModel);
                 SensorPanelViews.Add(item: view);
                 SensorPanelViewModels.Add(item: viewModel);
-            }
-
-            RcvDataList = new List<ConcurrentQueue<string>>(8);
-
-            for (int i = 0; i < 8; i++)
-            {
-                RcvDataList.Add(new ConcurrentQueue<string>());
             }
 
             FilePath = "C:\\Record";

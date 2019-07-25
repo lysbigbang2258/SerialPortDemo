@@ -5,8 +5,8 @@ namespace SerialPortDemo.Model
     using System;
     using System.Collections.Generic;
     using System.IO.Ports;
-    using System.Runtime.ExceptionServices;
     using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows.Threading;
 
     using GalaSoft.MvvmLight;
@@ -26,7 +26,12 @@ namespace SerialPortDemo.Model
         /// <summary>
         ///  The rcv lock.
         /// </summary>
-        private static object rcvlock = new object();
+        private static readonly object Rcvlock = new object();
+
+        /// <summary>
+        ///  The send lock.
+        /// </summary>
+        private static readonly object SendLock = new object();
 
         /// <summary>
         ///  The All ports name.
@@ -91,7 +96,7 @@ namespace SerialPortDemo.Model
         /// <summary>
         /// The send command timer.
         /// </summary>
-        private DispatcherTimer sendTimer;
+        private DispatcherTimer autoSendDataTimer;
 
         /// <summary>
         /// The check rcv data timer.
@@ -106,7 +111,7 @@ namespace SerialPortDemo.Model
         /// <summary>
         /// The received buffer.
         /// </summary>
-        private Queue<byte> receivedQueue;
+        private List<byte> receivedList;
 
         /// <summary>
         /// The should clear buffer.
@@ -117,6 +122,11 @@ namespace SerialPortDemo.Model
         ///     The rcv event handler.
         /// </summary>
         public event EventHandler<SensorEventArgs> SendEventHandler;
+
+        /// <summary>
+        /// The save event handler.
+        /// </summary>
+        public event EventHandler<SensorEventArgs> SaveEventHandler;
 
         #endregion
 
@@ -173,17 +183,6 @@ namespace SerialPortDemo.Model
             set {
                 addressNum = value;
                 RaisePropertyChanged(AddressNum.ToString());
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the address num.
-        /// </summary>
-        public List<int> AddressFamily {
-            get => addressFamily;
-            set {
-                addressFamily = value;
-                RaisePropertyChanged(() => AddressFamily);
             }
         }
 
@@ -257,7 +256,7 @@ namespace SerialPortDemo.Model
         {
             portsNames = null;
             addressFamily = new List<int>();
-            receivedQueue = new Queue<byte>();
+            receivedList = new List<byte>();
             receivesBuffer = new List<byte>();
 
             InitCheckTimer();
@@ -270,8 +269,8 @@ namespace SerialPortDemo.Model
         /// </summary>
         private void InitAutoSendTimer()
         {
-            sendTimer = new DispatcherTimer { IsEnabled = false };
-            sendTimer.Tick += AutoSendDataTimerTick;
+            autoSendDataTimer = new DispatcherTimer { IsEnabled = false };
+            autoSendDataTimer.Tick += AutoSendDataTimerTick;
         }
 
         /// <summary>
@@ -285,7 +284,6 @@ namespace SerialPortDemo.Model
         /// </param>
         private void AutoSendDataTimerTick(object sender, EventArgs e)
         {
-            bool ret = false;
             if (addressFamily.Count == 0)
             {
                 return;
@@ -293,12 +291,17 @@ namespace SerialPortDemo.Model
 
             foreach (int i in addressFamily)
             {
-                ret = SendCommand(i); // ToDo
-                Thread.SpinWait(100);
-                if (ret == false)
+                lock (SendLock)
                 {
-                    StopAutoSendDataTimer();
+                    bool ret = SendCommand(i); // ToDo
+                    if (ret == false)
+                    {
+                        StopAutoSendDataTimer();
+                    }
                 }
+                SendPackets++;
+                Thread.Sleep(SamplingFreq);
+               
                 Console.WriteLine("发送数据");
             }
         }
@@ -308,8 +311,8 @@ namespace SerialPortDemo.Model
         /// </summary>
         private void StopAutoSendDataTimer()
         {
-            sendTimer.IsEnabled = false;
-            sendTimer.Stop();
+            autoSendDataTimer.IsEnabled = false;
+            autoSendDataTimer.Stop();
         }
 
         /// <summary>
@@ -318,9 +321,7 @@ namespace SerialPortDemo.Model
         private void InitCheckTimer()
         {
             // 如果缓冲区中有数据，并且定时时间达到前依然没有得到处理，将会自动触发处理函数。
-            checkTimer = new DispatcherTimer();
-            checkTimer.Interval = new TimeSpan(0, 0, 0, 0, 50);
-            checkTimer.IsEnabled = false;
+            checkTimer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, 50), IsEnabled = false };
             checkTimer.Tick += CheckTimerTick;
         }
 
@@ -449,9 +450,9 @@ namespace SerialPortDemo.Model
         /// </param>
         private void StartSendTimer(int interval)
         {
-            sendTimer.IsEnabled = true;
-            sendTimer.Interval = TimeSpan.FromMilliseconds(interval);
-            sendTimer.Start();
+            autoSendDataTimer.IsEnabled = true;
+            autoSendDataTimer.Interval = TimeSpan.FromMilliseconds(interval);
+            autoSendDataTimer.Start();
         }
 
         /// <summary>
@@ -479,14 +480,18 @@ namespace SerialPortDemo.Model
                 }
             }
 
-            foreach (int i in list)
-            {
-                SendCommand(i);
-                Thread.SpinWait(100);
-            }
-
-            list.Clear();
-            IsCollected = false;
+            Task.Run(
+                () =>
+                    {
+                        foreach (int i in list)
+                        {
+                            SendCommand(i);
+                            SendPackets++;
+                            Thread.Sleep(100);
+                        }
+                        list.Clear();
+                        IsCollected = false;
+                    });
         }
 
         /// <summary>
@@ -519,7 +524,7 @@ namespace SerialPortDemo.Model
             }
 
             // 启动自动发送定时器
-            StartSendTimer(period); // Todo 
+            StartSendTimer(SamplingFreq); // Todo 
         }
 
         /// <summary>
@@ -528,7 +533,9 @@ namespace SerialPortDemo.Model
         public void StopCollectData()
         {
             StopRcvData();
-            AddressFamily.Clear();
+            StopAutoSendDataTimer();
+            StopCheckTimer();
+            addressFamily.Clear();
         }
 
         /// <summary>
@@ -596,7 +603,7 @@ namespace SerialPortDemo.Model
                            Parity = parity,
                            StopBits = stopBits,
                            ReceivedBytesThreshold = threshold,
-                           ReadBufferSize = 14 * 1000
+                           RtsEnable = true
                        };
         }
 
@@ -709,6 +716,17 @@ namespace SerialPortDemo.Model
         }
 
         /// <summary>
+        /// The on save event handler.
+        /// </summary>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        protected virtual void OnSaveEventHandler(SensorEventArgs e)
+        {
+            SaveEventHandler?.Invoke(this, e);
+        }
+
+        /// <summary>
         ///  The get height 4.
         /// </summary>
         /// <param name="data">
@@ -791,14 +809,17 @@ namespace SerialPortDemo.Model
         /// </param>
         void PortRcvByteReached(object sender, SerialDataReceivedEventArgs e)
         {
-            var sp = sender as SerialPort;
-
-            if (sp == null)
+            if (!(sender is SerialPort sp))
             {
                 return;
             }
 
             int bytesToRead = sp.BytesToRead;
+            if (bytesToRead < 14)
+            {
+                Console.WriteLine("接收数据长度太短");
+                return;
+            }
             byte[] tempBuffer = new byte[bytesToRead];
 
             sp.Read(tempBuffer, 0, bytesToRead);
@@ -808,29 +829,24 @@ namespace SerialPortDemo.Model
                 Console.WriteLine("Read fram head wrong");
             }
 
+            RcvPackets++;
             if (shouldClearBuffer)
             {
-                lock (rcvlock)
+                lock (Rcvlock)
                 {
                     receivesBuffer.Clear();
                 }
-                
+
                 shouldClearBuffer = false;
             }
 
             // 暂存缓冲区字节到全局缓冲区中等待处理
-
-            lock (rcvlock)
+            lock (Rcvlock)
             {
                 receivesBuffer.AddRange(tempBuffer);
             }
             
             StartCheckTimer();
-            if (receivesBuffer.Count >= THRESHVALUE)
-            {
-                Thread dataHandler = new Thread(BufferReceived);
-                dataHandler.Start();
-            }
         }
 
         /// <summary>
@@ -845,44 +861,57 @@ namespace SerialPortDemo.Model
         /// <summary>
         /// The buffer received.
         /// </summary>
-        /// <param name="obj">
-        /// List of byte
-        /// </param>
         private void BufferReceived()
         {
-            var tmp = receivesBuffer;
+            checkTimer.Stop();
+            var buffer = receivesBuffer;
 
-            if (tmp[0] != 0x77)
+            if (buffer[0] != 0x77 || buffer.Count < 14)
             {
                 Console.WriteLine("RCV fram head wrong");
-            }
-            foreach (byte b in tmp)
-            {
-                receivedQueue.Enqueue(b);
-            }
-
-            shouldClearBuffer = true;
-
-            if (receivedQueue.Count < 14)
-            {
+                receivesBuffer.Clear();
                 return;
             }
 
-            byte[] result = new byte[14];
-            for (int i = 0; i < result.Length; i++)
+            receivedList.AddRange(buffer);
+
+            List<byte[]> send_list = new List<byte[]>();
+
+            int count = receivedList.Count / 14;
+
+            for (int i = 0; i < count; i++)
             {
-                result[i] = receivedQueue.Dequeue();
+                var tmp = receivedList.GetRange(14 * i, 14).ToArray();
+                send_list.Add(tmp);
             }
+
+            receivedList.RemoveRange(0, 14 * count);
+            shouldClearBuffer = true;
 
             Console.WriteLine("Get send bytes");
             Angles angles = new Angles(0, 0, 0);
 
-            GetRcvData(result, out angles);
-            int index = result[2];
-            OnSendEventHandler(new SensorEventArgs(angles, index));
+            foreach (byte[] t in send_list)
+            {
+                GetRcvData(t, out angles);
+                int index = t[2];
+                var arg = new SensorEventArgs(angles, index);
+                OnSendEventHandler(arg);
+                OnSaveEventHandler(arg);
+            }
+
+            send_list.Clear();
             Console.WriteLine("Send UI Data");
-            Thread.SpinWait(100);
-            
+        }
+
+        /// <summary>
+        /// The init default property.
+        /// </summary>
+        public void InitDefaultProperty()
+        {
+            SendPackets = 0;
+            RcvPackets = 0;
+            addressFamily.Clear();
         }
 
         #endregion

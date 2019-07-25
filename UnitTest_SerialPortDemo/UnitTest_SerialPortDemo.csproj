@@ -62,7 +62,6 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Model\DataProcUnitTests.cs" />
     <Compile Include="RcvDataProcTests.cs" />
     <Compile Include="SerialPortComTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -76,6 +75,9 @@
       <Project>{f476ed37-ef83-40b2-a266-d53931d988a7}</Project>
       <Name>SerialPortDemo</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Model\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

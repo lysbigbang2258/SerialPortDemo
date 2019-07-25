@@ -49,6 +49,9 @@ namespace SerialPortDemo.ViewModel
             SimpleIoc.Default.Register<MasterWindowModel>();
         }
 
+        /// <summary>
+        /// Gets the main.
+        /// </summary>
         public MainViewModel Main
         {
             get
@@ -57,6 +60,9 @@ namespace SerialPortDemo.ViewModel
             }
         }
 
+        /// <summary>
+        /// Gets the one window.
+        /// </summary>
         public OneWindowModel OneWindow
         {
             get
@@ -65,6 +71,9 @@ namespace SerialPortDemo.ViewModel
             }
         }
 
+        /// <summary>
+        /// Gets the master window.
+        /// </summary>
         public MasterWindowModel MasterWindow {
             get {
                 return ServiceLocator.Current.GetInstance<MasterWindowModel>();
