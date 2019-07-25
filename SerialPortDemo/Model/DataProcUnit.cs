@@ -299,9 +299,10 @@ namespace SerialPortDemo.Model
                         StopAutoSendDataTimer();
                     }
                 }
+
                 SendPackets++;
                 Thread.Sleep(SamplingFreq);
-               
+
                 Console.WriteLine("发送数据");
             }
         }
@@ -316,7 +317,7 @@ namespace SerialPortDemo.Model
         }
 
         /// <summary>
-        /// TODO The init check timer.
+        /// The init check timer.
         /// </summary>
         private void InitCheckTimer()
         {
@@ -350,7 +351,7 @@ namespace SerialPortDemo.Model
                 // 进行数据处理，采用新的线程进行处理。
                 Thread dataHandler = new Thread(BufferReceived);
                 dataHandler.Start();
-            }  
+            }
         }
 
         /// <summary>
@@ -375,6 +376,7 @@ namespace SerialPortDemo.Model
                 mySerialPort.DataReceived += PortRcvByteReached;
                 return true;
             }
+
             return false;
         }
 
@@ -489,6 +491,7 @@ namespace SerialPortDemo.Model
                             SendPackets++;
                             Thread.Sleep(100);
                         }
+
                         list.Clear();
                         IsCollected = false;
                     });
@@ -509,7 +512,7 @@ namespace SerialPortDemo.Model
             }
 
             IsCollected = true;
-            
+
             foreach (KeyValuePair<int, bool> key_value_pair in addresses)
             {
                 if (key_value_pair.Value)
@@ -820,6 +823,7 @@ namespace SerialPortDemo.Model
                 Console.WriteLine("接收数据长度太短");
                 return;
             }
+
             byte[] tempBuffer = new byte[bytesToRead];
 
             sp.Read(tempBuffer, 0, bytesToRead);
@@ -845,7 +849,7 @@ namespace SerialPortDemo.Model
             {
                 receivesBuffer.AddRange(tempBuffer);
             }
-            
+
             StartCheckTimer();
         }
 

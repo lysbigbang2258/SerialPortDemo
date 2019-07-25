@@ -8,6 +8,7 @@ namespace SerialPortDemo.ViewModel
     using System.IO;
     using System.Text;
     using System.Windows;
+    using System.Windows.Threading;
 
     using GalaSoft.MvvmLight;
     using GalaSoft.MvvmLight.Command;
@@ -26,6 +27,11 @@ namespace SerialPortDemo.ViewModel
         ///     The receive Sensor data string builder
         /// </summary>
         private readonly StringBuilder rcvStrBuilder;
+
+        /// <summary>
+        /// The now timer.
+        /// </summary>
+        private DispatcherTimer curTimer;
 
         /// <summary>
         ///     The baud collection binding com-box.
@@ -655,7 +661,6 @@ namespace SerialPortDemo.ViewModel
             }
 
             BaudCollection = new ObservableCollection<int> { 2400, 4800, 9600, 19200, 38400, 38400, 57600, 115200 };
-
             SensorPanelViews = new ObservableCollection<SensorPanelView>();
             SensorPanelViewModels = new ObservableCollection<SensorPanelViewModel>();
             for (int i = 0; i < 8; i++)
@@ -668,8 +673,50 @@ namespace SerialPortDemo.ViewModel
                 SensorPanelViewModels.Add(item: viewModel);
             }
 
+            StartCurTimer();
             FilePath = "C:\\Record";
             FileName = "Test";
+        }
+
+        /// <summary>
+        /// The init cur timer.
+        /// </summary>
+        private void StartCurTimer()
+        {
+            curTimer = new DispatcherTimer();
+
+            curTimer.Tick += new EventHandler(ShowCurTimer);
+
+            curTimer.Interval = new TimeSpan(0, 0, 0, 1, 0);
+
+            curTimer.Start();
+        }
+
+        /// <summary>
+        /// The show cur timer.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void ShowCurTimer(object sender, EventArgs e)
+        {
+            // "星期"+DateTime.Now.DayOfWeek.ToString(("d"))
+
+            // // 获得星期几
+            // string strdata = DateTime.Now.ToString("dddd", new System.Globalization.CultureInfo("zh-cn"));
+            // strdata += " ";
+            
+            // 获得年月日
+            string strdata = DateTime.Now.ToString("yyyy年MM月dd日");   // yyyy年MM月dd日
+            strdata += " ";
+
+            // 获得时分秒
+            strdata += DateTime.Now.ToString("HH:mm:ss:ms");
+
+            CurTime = strdata;
         }
 
         #endregion

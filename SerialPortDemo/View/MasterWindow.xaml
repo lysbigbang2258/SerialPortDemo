@@ -156,26 +156,35 @@
                         </Grid.RowDefinitions>
                         <DockPanel Grid.Row="0">
                             <Label VerticalAlignment="Center" Content="当前时间：" />
-                            <TextBlock
-                                Width="300"
+                            <TextBox
+                                Width="250"
                                 Height="30"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
                                 Background="AliceBlue"
+                                Foreground="MediumVioletRed"
                                 Text="{Binding CurTime, Mode=Default}" />
                         </DockPanel>
 
                         <DockPanel Grid.Row="1">
                             <Label VerticalAlignment="Center" Content="发送次数：" />
-                            <TextBlock
-                                Width="300"
+                            <TextBox
+                                Width="250"
                                 Height="30"
+                                Margin="0,12"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
                                 Background="AliceBlue"
                                 Text="{Binding ProcUnit.SendPackets, Mode=Default}" />
                         </DockPanel>
                         <DockPanel Grid.Row="2">
                             <Label VerticalAlignment="Center" Content="接收次数：" />
-                            <TextBlock
-                                Width="300"
+                            <TextBox
+                                Width="250"
                                 Height="30"
+                                Margin="0,12"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
                                 Background="AliceBlue"
                                 Text="{Binding ProcUnit.RcvPackets, Mode=Default}" />
 
