@@ -7,7 +7,6 @@
     Title="MasterWindow"
     Width="1100"
     Height="750"
-    Background="#97ADAC"
     DataContext="{Binding Source={StaticResource Locator}, Path=MasterWindow, Mode=Default}"
     FontFamily="SimSun，微软雅黑"
     FontSize="16"
@@ -24,7 +23,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid>
+    <Grid Name="TreeWidow">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -48,310 +47,315 @@
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
 
-                    <Grid Grid.Column="0" Width="180">
+                        <Grid Grid.Column="0" Width="180">
 
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
 
-                        <DockPanel Grid.Row="0" Margin="5">
-                            <Label
-                                Width="60"
-                                HorizontalContentAlignment="Left"
-                                Content="端口号：" />
-                            <ComboBox
-                                Name="combPort"
-                                Width="100"
-                                ItemsSource="{Binding ComCollection, Mode=Default}"
-                                SelectedIndex="0"
-                                SelectedItem="{Binding ComCollectionItem, Mode=Default}" />
-                        </DockPanel>
+                            <DockPanel Grid.Row="0" Margin="5">
+                                <Label
+                                    Width="60"
+                                    HorizontalContentAlignment="Left"
+                                    Content="端口号：" />
+                                <ComboBox
+                                    Name="combPort"
+                                    Width="100"
+                                    ItemsSource="{Binding ComCollection, Mode=Default}"
+                                    SelectedIndex="0"
+                                    SelectedItem="{Binding ComCollectionItem, Mode=Default}" />
+                            </DockPanel>
 
-                        <DockPanel Grid.Row="1" Margin="5">
-                            <Label
-                                Width="60"
-                                HorizontalContentAlignment="Right"
-                                Content="波特率：" />
-                            <ComboBox
-                                Width="100"
-                                HorizontalContentAlignment="Left"
-                                ItemsSource="{Binding BaudCollection, Mode=Default}"
-                                SelectedIndex="0"
-                                SelectedItem="{Binding BaudCollectionItem, Mode=Default}" />
-                        </DockPanel>
+                            <DockPanel Grid.Row="1" Margin="5">
+                                <Label
+                                    Width="60"
+                                    HorizontalContentAlignment="Right"
+                                    Content="波特率：" />
+                                <ComboBox
+                                    Width="100"
+                                    HorizontalContentAlignment="Left"
+                                    ItemsSource="{Binding BaudCollection, Mode=Default}"
+                                    SelectedIndex="0"
+                                    SelectedItem="{Binding BaudCollectionItem, Mode=Default}" />
+                            </DockPanel>
 
-                        <TextBlock
-                            Grid.Row="2"
-                            Margin="10"
-                            HorizontalAlignment="Center"
-                            FontSize="20"
-                            Text="串口已连接">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Visibility" Value="Hidden" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ProcUnit.IsOpenPort, Mode=Default}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-
-                        <DockPanel Grid.Row="3" Height="40">
-                            <Ellipse Width="44" Stroke="Black">
-                                <Ellipse.Style>
-                                    <Style TargetType="Ellipse">
-                                        <Setter Property="Fill" Value="AntiqueWhite" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ProcUnit.IsOpenPort, Mode=Default}" Value="True">
-                                                <Setter Property="Fill" Value="OrangeRed" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Ellipse.Style>
-                            </Ellipse>
-
-                            <Button
-                                Width="80"
-                                Margin="5"
-                                HorizontalAlignment="Right"
-                                Command="{Binding OpenSerialCommand, Mode=Default}">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Content" Value="打开" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ProcUnit.IsOpenPort, Mode=Default}" Value="True">
-                                                <Setter Property="Content" Value="关闭" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-
-                        </DockPanel>
-                    </Grid>
-
-                    <Grid Name="gridMsg" Grid.Column="1">
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <DockPanel Grid.Row="0">
-                            <Label VerticalAlignment="Center" Content="当前时间：" />
-                            <TextBox
-                                Width="250"
-                                Height="30"
-                                HorizontalContentAlignment="Center"
-                                VerticalContentAlignment="Center"
-                                Background="AliceBlue"
-                                Foreground="MediumVioletRed"
-                                Text="{Binding CurTime, Mode=Default}" />
-                        </DockPanel>
-
-                        <DockPanel Grid.Row="1">
-                            <Label VerticalAlignment="Center" Content="发送次数：" />
-                            <TextBox
-                                Width="250"
-                                Height="30"
-                                Margin="0,12"
-                                HorizontalContentAlignment="Center"
-                                VerticalContentAlignment="Center"
-                                Background="AliceBlue"
-                                Text="{Binding ProcUnit.SendPackets, Mode=Default}" />
-                        </DockPanel>
-                        <DockPanel Grid.Row="2">
-                            <Label VerticalAlignment="Center" Content="接收次数：" />
-                            <TextBox
-                                Width="250"
-                                Height="30"
-                                Margin="0,12"
-                                HorizontalContentAlignment="Center"
-                                VerticalContentAlignment="Center"
-                                Background="AliceBlue"
-                                Text="{Binding ProcUnit.RcvPackets, Mode=Default}" />
-
-                        </DockPanel>
-                    </Grid>
-
-                    <Grid Grid.Column="2">
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-
-                        <DockPanel Grid.Row="0" Height="30">
-                            <Label
-                                Width="80"
-                                HorizontalContentAlignment="Center"
-                                Content="路径:" />
-                            <TextBox
-                                Width="150"
-                                HorizontalAlignment="Center"
-                                Background="AliceBlue"
-                                Text="{Binding FilePath, Mode=TwoWay}" />
-                            <Button
-                                Width="80"
-                                HorizontalAlignment="Right"
-                                Command="{Binding ChangePathCommand, Mode=Default}"
-                                Content="修改路径" />
-                        </DockPanel>
-
-                        <DockPanel Grid.Row="1" Height="30">
-                            <Label
-                                Width="80"
-                                HorizontalContentAlignment="Center"
-                                Content="文件名:" />
-                            <TextBox
-                                Width="150"
-                                HorizontalAlignment="Center"
-                                Background="AliceBlue"
-                                Text="{Binding FileName, Mode=TwoWay}" />
-                            <Button
-                                Width="80"
-                                HorizontalAlignment="Right"
-                                Command="{Binding ChangePathCommand, Mode=Default}"
-                                Content="打开路径" />
-                        </DockPanel>
-
-                        <DockPanel Grid.Row="2" Height="30">
-                            <Label
-                                Width="80"
-                                HorizontalContentAlignment="Center"
-                                Content="频率:" />
-                            <TextBox
-                                Width="150"
-                                HorizontalAlignment="Center"
-                                Background="AliceBlue"
-                                Text="{Binding ProcUnit.SaveFreq, Mode=Default}" />
                             <TextBlock
-                                Width="100"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center"
-                                Text="s/次"
-                                TextAlignment="Left" />
-                        </DockPanel>
+                                Grid.Row="2"
+                                Margin="10"
+                                HorizontalAlignment="Center"
+                                FontSize="20"
+                                Text="串口已连接">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ProcUnit.IsOpenPort, Mode=Default}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
 
-                        <DockPanel Grid.Row="3" Height="30">
-                            <CheckBox
-                                Width="80"
-                                Margin="20,0,0,0"
-                                VerticalAlignment="Center"
-                                HorizontalContentAlignment="Center"
-                                Content="自动存储 :"
-                                IsChecked="{Binding ProcUnit.IsAutoSave, Mode=TwoWay}" />
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
 
+                            <DockPanel Grid.Row="3" Height="40">
+                                <Ellipse Width="44" Stroke="Black">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Setter Property="Fill" Value="AntiqueWhite" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ProcUnit.IsOpenPort, Mode=Default}" Value="True">
+                                                    <Setter Property="Fill" Value="OrangeRed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+
+                                <Button
+                                    Width="80"
+                                    Margin="5"
+                                    HorizontalAlignment="Right"
+                                    Command="{Binding OpenSerialCommand, Mode=Default}">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Content" Value="打开" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ProcUnit.IsOpenPort, Mode=Default}" Value="True">
+                                                    <Setter Property="Content" Value="关闭" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                            </DockPanel>
+                        </Grid>
+
+                        <Grid Name="gridMsg" Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <DockPanel Grid.Row="0">
+                                <Label VerticalAlignment="Center" Content="当前时间：" />
+                                <TextBox
+                                    Width="250"
+                                    Height="30"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    Background="AliceBlue"
+                                    Foreground="MediumVioletRed"
+                                    Text="{Binding CurTime, Mode=Default}" />
+                            </DockPanel>
+
+                            <DockPanel Grid.Row="1">
+                                <Label VerticalAlignment="Center" Content="发送次数：" />
+                                <TextBox
+                                    Width="250"
+                                    Height="30"
+                                    Margin="0,12"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    Background="AliceBlue"
+                                    Text="{Binding ProcUnit.SendPackets, Mode=Default}" />
+                            </DockPanel>
+                            <DockPanel Grid.Row="2">
+                                <Label VerticalAlignment="Center" Content="接收次数：" />
+                                <TextBox
+                                    Width="250"
+                                    Height="30"
+                                    Margin="0,12"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    Background="AliceBlue"
+                                    Text="{Binding ProcUnit.RcvPackets, Mode=Default}" />
+
+                            </DockPanel>
+                        </Grid>
+
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <DockPanel Grid.Row="0" Height="30">
+                                <Label
+                                    Width="80"
+                                    HorizontalContentAlignment="Center"
+                                    Content="路径:" />
+                                <TextBox
+                                    Width="150"
+                                    HorizontalAlignment="Center"
+                                    Background="AliceBlue"
+                                    Text="{Binding FilePath, Mode=TwoWay}" />
+                                <Button
+                                    Width="80"
+                                    HorizontalAlignment="Right"
+                                    Command="{Binding ChangePathCommand, Mode=Default}"
+                                    Content="修改路径" />
+                            </DockPanel>
+
+                            <DockPanel Grid.Row="1" Height="30">
+                                <Label
+                                    Width="80"
+                                    HorizontalContentAlignment="Center"
+                                    Content="文件名:" />
+                                <TextBox
+                                    Width="150"
+                                    HorizontalAlignment="Center"
+                                    Background="AliceBlue"
+                                    Text="{Binding FileName, Mode=TwoWay}" />
+                                <Button
+                                    Width="80"
+                                    HorizontalAlignment="Right"
+                                    Command="{Binding ChangePathCommand, Mode=Default}"
+                                    Content="打开路径" />
+                            </DockPanel>
+
+                            <DockPanel Grid.Row="2" Height="30">
+                                <Label
+                                    Width="80"
+                                    HorizontalContentAlignment="Center"
+                                    Content="频率:" />
+                                <TextBox
+                                    Width="150"
+                                    HorizontalAlignment="Center"
+                                    Background="AliceBlue"
+                                    Text="{Binding ProcUnit.SaveFreq, Mode=Default}" />
+                                <TextBlock
+                                    Width="100"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Text="s/次"
+                                    TextAlignment="Left" />
+                            </DockPanel>
+
+                            <DockPanel Grid.Row="3" Height="30">
+                                <CheckBox
+                                    Width="80"
+                                    Margin="20,0,0,0"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    Content="自动存储 :"
+                                    IsChecked="{Binding ProcUnit.IsAutoSave, Mode=TwoWay}" />
+
+                                <Button
+                                    Width="80"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Command="{Binding SaveOnceCommand, Mode=Default}">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Content" Value="开启保存" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsStartSaveFile, Mode=Default}" Value="True">
+                                                    <Setter Property="Content" Value="关闭保存" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </DockPanel>
+                        </Grid>
+
+                    </Grid>
+
+                    <Grid
+                        Grid.Row="1"
+                        Height="40"
+                        Margin="5">
+                        <DockPanel>
                             <Button
-                                Width="80"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center"
-                                Command="{Binding SaveOnceCommand, Mode=Default}">
+                                Width="180"
+                                Height="30"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                Command="{Binding CollectDataCommand, Mode=Default}"
+                                FontSize="20">
                                 <Button.Style>
                                     <Style TargetType="Button">
-                                        <Setter Property="Content" Value="开启保存" />
+                                        <Setter Property="Content" Value="开始采集" />
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsStartSaveFile, Mode=Default}" Value="True">
-                                                <Setter Property="Content" Value="关闭保存" />
+                                            <DataTrigger Binding="{Binding IsCollecting, Mode=Default}" Value="True">
+                                                <Setter Property="Content" Value="关闭采集" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
                             </Button>
+                            <DockPanel>
+
+                                <CheckBox
+                                    Margin="10,0,0,0"
+                                    VerticalContentAlignment="Center"
+                                    Content="单次采集"
+                                    FontSize="15"
+                                    IsChecked="{Binding IsSingleSend, Mode=TwoWay}"
+                                    Style="{DynamicResource CheckBox_WithContent}" />
+                                <Label
+                                    VerticalContentAlignment="Center"
+                                    Content="采集速度:"
+                                    FontSize="20" />
+
+                                <TextBox
+                                    Width="80"
+                                    Margin="5"
+                                    Style="{DynamicResource TextBox_Validation}"
+                                    Text="{Binding ProcUnit.SamplingFreq, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+
+                                <Label
+                                    VerticalContentAlignment="Center"
+                                    Content="ms/个"
+                                    FontSize="20" />
+                            </DockPanel>
                         </DockPanel>
                     </Grid>
-
                 </Grid>
-
-                <Grid
-                    Grid.Row="1"
-                    Height="40"
-                    Margin="5">
-                    <DockPanel>
-                        <Button
-                            Width="180"
-                            Height="30"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            Command="{Binding CollectDataCommand, Mode=Default}"
-                            FontSize="20">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Content" Value="开始采集" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsCollecting, Mode=Default}" Value="True">
-                                            <Setter Property="Content" Value="关闭采集" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <DockPanel>
-
-                            <CheckBox
-                                Margin="10,0,0,0"
+                <Grid Name="gridSensors" Grid.Row="1">
+                    <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <TabItem Header="表格">
+                            <ItemsControl
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                HorizontalContentAlignment="Center"
                                 VerticalContentAlignment="Center"
-                                Content="单次采集"
-                                FontSize="15"
-                                IsChecked="{Binding IsSingleSend, Mode=TwoWay}"
-                                Style="{DynamicResource CheckBox_WithContent}" />
-                            <Label
-                                VerticalContentAlignment="Center"
-                                Content="采集速度:"
-                                FontSize="20" />
+                                Background="White"
+                                ItemsSource="{Binding SensorPanelViews, Mode=Default}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <!--  表示是纵向排列，像素达到500的时候挤到下一行中 g  -->
+                                        <WrapPanel ItemHeight="200" ItemWidth="210" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
 
-                            <TextBox
-                                Width="80"
-                                Margin="5"
-                                Style="{DynamicResource TextBox_Validation}"
-                                Text="{Binding ProcUnit.SamplingFreq, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+                            </ItemsControl>
+                        </TabItem>
 
-                            <Label
-                                VerticalContentAlignment="Center"
-                                Content="ms/个"
-                                FontSize="20" />
-                        </DockPanel>
-                    </DockPanel>
-                </Grid>
-
-                <Grid
-                    Name="gridSensors"
-                    Grid.Row="2"
-                    Margin="5">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <ItemsControl
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            ItemsSource="{Binding SensorPanelViews, Mode=Default}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <!--  表示是纵向排列，像素达到500的时候挤到下一行中 g  -->
-                                    <WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-
-                        </ItemsControl>
-                    </StackPanel>
+                    </TabControl>
                 </Grid>
             </Grid>
 

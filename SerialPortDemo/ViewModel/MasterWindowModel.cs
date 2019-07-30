@@ -666,7 +666,7 @@ namespace SerialPortDemo.ViewModel
             for (int i = 0; i < 8; i++)
             {
                 string str = (i + 1).ToString();
-                SensorPanelViewModel viewModel = new SensorPanelViewModel(num: str, head: str, pitch: str, roll: str) { IsChecked = false };
+                SensorPanelViewModel viewModel = new SensorPanelViewModel(200, 200,num: str, head: str, pitch: str, roll: str) { IsChecked = false };
                 addressDictionary.Add(key: i, false);
                 SensorPanelView view = new SensorPanelView(viewModel: viewModel);
                 SensorPanelViews.Add(item: view);
@@ -685,7 +685,7 @@ namespace SerialPortDemo.ViewModel
         {
             curTimer = new DispatcherTimer();
 
-            curTimer.Tick += new EventHandler(ShowCurTimer);
+            curTimer.Tick += ShowCurTimer;
 
             curTimer.Interval = new TimeSpan(0, 0, 0, 1, 0);
 
@@ -714,7 +714,7 @@ namespace SerialPortDemo.ViewModel
             strdata += " ";
 
             // 获得时分秒
-            strdata += DateTime.Now.ToString("HH:mm:ss:ms");
+            strdata += DateTime.Now.ToString("HH:mm:ss");
 
             CurTime = strdata;
         }

@@ -46,6 +46,12 @@ namespace SerialPortDemo.ViewModel {
         /// <summary>
         /// Initializes a new instance of the <see cref="SensorPanelViewModel"/> class.
         /// </summary>
+        /// <param name="width">
+        /// The width.
+        /// </param>
+        /// <param name="height">
+        /// The height.
+        /// </param>
         /// <param name="num">
         /// The address num.
         /// </param>
@@ -58,14 +64,14 @@ namespace SerialPortDemo.ViewModel {
         /// <param name="roll">
         /// The roll value.
         /// </param>
-        public SensorPanelViewModel(string num, string head, string pitch, string roll) {
+        public SensorPanelViewModel(int width, int height, string num, string head, string pitch, string roll)
+        {
+            Width = width;
+            Height = height;
             LabNum = num;
             TextHead = head;
             TextRoll = roll;
             TextPitch = pitch;
-
-            Height = 150;
-            width = 200;
         }
 
         /// <summary>

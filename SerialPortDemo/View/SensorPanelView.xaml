@@ -12,58 +12,67 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <StackPanel
-        x:Name="rootPanel"
-        Width="{Binding Width}"
-        Height="{Binding Height}">
-        <DockPanel>
-            <CheckBox
-                Margin="10,0,20,0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                ClickMode="Press"
-                IsChecked="{Binding IsChecked, Mode=TwoWay}"
-                Style="{DynamicResource CheckBox_Normal}" />
-            <Label
-                x:Name="label"
-                HorizontalAlignment="Center"
-                Content="传感器"
-                FontSize="14" />
-            <Label
-                x:Name="labelSensorId"
-                HorizontalAlignment="Left"
-                Content="{Binding LabNum}"
-                FontSize="14" />
-        </DockPanel>
+    <GroupBox>
+        <Grid
+            x:Name="rootPanel"
+            Width="{Binding Width}"
+            Height="{Binding Height}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <DockPanel Grid.Row="0">
+                <CheckBox
+                    Margin="10,0,20,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    ClickMode="Press"
+                    IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                    Style="{DynamicResource CheckBox_Normal}" />
+                <Label
+                    x:Name="label"
+                    HorizontalAlignment="Center"
+                    Content="传感器"
+                    FontSize="14" />
+                <Label
+                    x:Name="labelSensorId"
+                    HorizontalAlignment="Left"
+                    Content="{Binding LabNum}"
+                    FontSize="14" />
+            </DockPanel>
 
-        <DockPanel Margin="5">
-            <Label Content="X值：" FontSize="14" />
-            <TextBox
-                x:Name="tbHead"
-                Width="100"
-                Background="AliceBlue"
-                BorderThickness="0"
-                Text="{Binding TextHead}" />
-        </DockPanel>
-        <DockPanel Margin="5">
-            <Label Content="Y值：" FontSize="14" />
-            <TextBox
-                x:Name="tbPitch"
-                Width="100"
-                Background="AliceBlue"
-                BorderThickness="0"
-                Text="{Binding TextPitch}" />
-        </DockPanel>
-        <DockPanel Margin="5">
-            <Label Content="Z值：" FontSize="14" />
-            <TextBox
-                x:Name="tbRoll"
-                Width="100"
-                Background="AliceBlue"
-                BorderThickness="0"
-                Text="{Binding TextRoll}" />
-        </DockPanel>
-    </StackPanel>
+            <DockPanel Grid.Row="1" Margin="5">
+                <Label Content="X值：" FontSize="14" />
+                <TextBox
+                    x:Name="tbHead"
+                    Width="100"
+                    Background="AliceBlue"
+                    BorderThickness="0"
+                    Text="{Binding TextHead}" />
+            </DockPanel>
+            <DockPanel Grid.Row="2" Margin="5">
+                <Label Content="Y值：" FontSize="14" />
+                <TextBox
+                    x:Name="tbPitch"
+                    Width="100"
+                    Background="AliceBlue"
+                    BorderThickness="0"
+                    Text="{Binding TextPitch}" />
+            </DockPanel>
+            <DockPanel Grid.Row="3" Margin="5">
+                <Label Content="Z值：" FontSize="14" />
+                <TextBox
+                    x:Name="tbRoll"
+                    Width="100"
+                    Background="AliceBlue"
+                    BorderThickness="0"
+                    Text="{Binding TextRoll}" />
+            </DockPanel>
+        </Grid>
+    </GroupBox>
+
 
 
 </UserControl>
