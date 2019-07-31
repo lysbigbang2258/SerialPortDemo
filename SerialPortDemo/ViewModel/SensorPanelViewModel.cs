@@ -1,6 +1,8 @@
 ﻿// 2019062615:16
 
 namespace SerialPortDemo.ViewModel {
+    using System.Collections.Generic;
+
     using GalaSoft.MvvmLight;
 
     /// <summary>

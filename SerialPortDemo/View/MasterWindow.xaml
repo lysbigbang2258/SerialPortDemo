@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ni="http://schemas.ni.com/controls/2009/xaml/presentation"
     Title="MasterWindow"
     Width="1100"
     Height="750"
@@ -351,10 +352,39 @@
                                         <WrapPanel ItemHeight="200" ItemWidth="210" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
-
                             </ItemsControl>
                         </TabItem>
 
+                        <TabItem Header="图">
+                            <ni:Graph
+                                x:Name="delay_graph"
+                                Width="800"
+                                Height="400"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                HorizontalContentAlignment="Left"
+                                VerticalContentAlignment="Center"
+                                Background="{x:Null}"
+                                Foreground="{x:Null}">
+                                <ni:Graph.Axes>
+                                    <ni:AxisDouble
+                                        Adjuster="None"
+                                        Label="频率"
+                                        LabelVisibility="Visible"
+                                        Orientation="Vertical"
+                                        Range="-1,1" />
+                                    <ni:AxisDouble
+                                        Adjuster="None"
+                                        Orientation="Horizontal"
+                                        Range="0,200" />
+                                </ni:Graph.Axes>
+                                <ni:Graph.Plots>
+                                    <ni:Plot>
+                                        <ni:LinePlotRenderer Stroke="Green" StrokeThickness="3" />
+                                    </ni:Plot>
+                                </ni:Graph.Plots>
+                            </ni:Graph>
+                        </TabItem>
                     </TabControl>
                 </Grid>
             </Grid>
