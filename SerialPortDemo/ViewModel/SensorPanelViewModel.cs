@@ -45,6 +45,7 @@ namespace SerialPortDemo.ViewModel {
         /// </summary>
         private int height;
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SensorPanelViewModel"/> class.
         /// </summary>

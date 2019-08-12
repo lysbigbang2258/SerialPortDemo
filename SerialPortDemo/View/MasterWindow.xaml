@@ -356,8 +356,8 @@
                         </TabItem>
 
                         <TabItem Header="图">
-                            <ni:Graph
-                                x:Name="delay_graph"
+                            <ni:MixedGraph
+                                x:Name="sensorGraph"
                                 Width="800"
                                 Height="400"
                                 HorizontalAlignment="Left"
@@ -365,25 +365,21 @@
                                 HorizontalContentAlignment="Left"
                                 VerticalContentAlignment="Center"
                                 Background="{x:Null}"
+                                DataSource="{Binding GraphCollection, Mode=OneWay}"
                                 Foreground="{x:Null}">
-                                <ni:Graph.Axes>
+                                <ni:MixedGraph.Axes>
                                     <ni:AxisDouble
                                         Adjuster="None"
                                         Label="频率"
                                         LabelVisibility="Visible"
                                         Orientation="Vertical"
-                                        Range="-1,1" />
+                                        Range="-360,360" />
                                     <ni:AxisDouble
                                         Adjuster="None"
                                         Orientation="Horizontal"
                                         Range="0,200" />
-                                </ni:Graph.Axes>
-                                <ni:Graph.Plots>
-                                    <ni:Plot>
-                                        <ni:LinePlotRenderer Stroke="Green" StrokeThickness="3" />
-                                    </ni:Plot>
-                                </ni:Graph.Plots>
-                            </ni:Graph>
+                                </ni:MixedGraph.Axes>
+                            </ni:MixedGraph>
                         </TabItem>
                     </TabControl>
                 </Grid>

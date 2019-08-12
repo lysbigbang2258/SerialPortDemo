@@ -69,6 +69,11 @@ namespace SerialPortDemo.ViewModel
         private ObservableCollection<string> comCollection;
 
         /// <summary>
+        ///   The graph collection.
+        /// </summary>
+        private ObservableCollection<ObservableCollection<double>> graphCollection;
+
+        /// <summary>
         ///     The com collection item is Selected.
         /// </summary>
         private string comCollectionItem;
@@ -401,13 +406,24 @@ namespace SerialPortDemo.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets the start save file.
+        ///  Gets or sets the start save file.
         /// </summary>
         public bool IsStartSaveFile {
             get => isStartSaveFile;
             set {
                 isStartSaveFile = value;
                 RaisePropertyChanged(() => IsStartSaveFile);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets The graph collection.
+        /// </summary>
+        public ObservableCollection<ObservableCollection<double>> GraphCollection {
+            get => graphCollection;
+            set {
+                graphCollection = value;
+                RaisePropertyChanged(() => graphCollection);
             }
         }
 
@@ -637,6 +653,17 @@ namespace SerialPortDemo.ViewModel
                 SensorPanelViewModels[index: num].TextHead = head;
                 SensorPanelViewModels[index: num].TextPitch = pitch;
                 SensorPanelViewModels[index: num].TextRoll = roll;
+
+                if (GraphCollection[0].Count > 50)
+                {
+                    GraphCollection[0].Clear();
+                    GraphCollection[1].Clear();
+                    GraphCollection[2].Clear();
+                }
+
+                GraphCollection[0].Add(e.Angles.Head);
+                GraphCollection[1].Add(e.Angles.Pitch);
+                GraphCollection[2].Add(e.Angles.Roll);
             }
             catch (Exception exception)
             {
@@ -666,11 +693,18 @@ namespace SerialPortDemo.ViewModel
             for (int i = 0; i < 8; i++)
             {
                 string str = (i + 1).ToString();
-                SensorPanelViewModel viewModel = new SensorPanelViewModel(200, 200,num: str, head: str, pitch: str, roll: str) { IsChecked = false };
+                SensorPanelViewModel viewModel = new SensorPanelViewModel(200, 200, num: str, head: str, pitch: str, roll: str) { IsChecked = false };
                 addressDictionary.Add(key: i, false);
                 SensorPanelView view = new SensorPanelView(viewModel: viewModel);
                 SensorPanelViews.Add(item: view);
                 SensorPanelViewModels.Add(item: viewModel);
+            }
+
+
+            GraphCollection = new ObservableCollection<ObservableCollection<double>>();
+            for (int i = 0; i < 3; i++)
+            {
+                GraphCollection.Add(new ObservableCollection<double>());
             }
 
             StartCurTimer();
