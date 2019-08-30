@@ -24,7 +24,7 @@ namespace SerialPortDemo.ViewModel
         #region Field
 
         /// <summary>
-        ///     The receive Sensor data string builder
+        /// The receive Sensor data string builder
         /// </summary>
         private readonly StringBuilder rcvStrBuilder;
 
@@ -53,10 +53,7 @@ namespace SerialPortDemo.ViewModel
         /// </summary>
         private RelayCommand changePathCommand;
 
-        /// <summary>
-        ///     The command of clear log text.
-        /// </summary>
-        private RelayCommand clearLogTextCommand;
+
 
         /// <summary>
         ///     The command of collecting data.
@@ -103,10 +100,6 @@ namespace SerialPortDemo.ViewModel
         /// </summary>
         private RelayCommand openSerialCommand;
 
-        /// <summary>
-        ///     The proc unit object.
-        /// </summary>
-        private DataProcUnit procUnit;
 
         /// <summary>
         ///     The command of logging text.
@@ -122,6 +115,11 @@ namespace SerialPortDemo.ViewModel
         ///     The command of selecting com com-box.
         /// </summary>
         private RelayCommand selectOnComComboxCommand;
+
+        /// <summary>
+        /// The clear alarm text command.
+        /// </summary>
+        private RelayCommand clearLogTextCommand;
 
         /// <summary>
         ///     The log or command text msg.
@@ -158,6 +156,22 @@ namespace SerialPortDemo.ViewModel
         /// </summary>
         private string timeStr;
 
+        /// <summary>
+        /// The help text.
+        /// </summary>
+        private string helpText;
+
+        /// <summary>
+        /// The proc unit object.
+        /// </summary>
+        private ProcessingSensorData procUnit;
+
+        /// <summary>
+        /// The alarm messenger.
+        /// </summary>
+        private HelpMessenger logMessenger;
+
+
         #endregion
 
         /// <summary>
@@ -167,7 +181,7 @@ namespace SerialPortDemo.ViewModel
         {
             rcvStrBuilder = new StringBuilder();
             Init();
-            ProcUnit.SendEventHandler += GetDataReached;
+            ProcUnit.SendSensorEventHandler += GetDataReached;
         }
 
         #region Property
@@ -329,7 +343,7 @@ namespace SerialPortDemo.ViewModel
         /// <summary>
         ///     Gets or sets the proc unit.
         /// </summary>
-        public DataProcUnit ProcUnit {
+        public ProcessingSensorData ProcUnit {
             get => procUnit;
             set {
                 procUnit = value;
@@ -384,7 +398,7 @@ namespace SerialPortDemo.ViewModel
         public ObservableCollection<SensorPanelView> SensorPanelViews { get; set; }
 
         /// <summary>
-        ///     Gets or sets the text msg.
+        /// Gets or sets the text msg.
         /// </summary>
         public string TextMsg {
             get => textMsg;
@@ -423,9 +437,32 @@ namespace SerialPortDemo.ViewModel
             get => graphCollection;
             set {
                 graphCollection = value;
-                RaisePropertyChanged(() => graphCollection);
+                RaisePropertyChanged(() => GraphCollection);
             }
         }
+
+        /// <summary>
+        /// Gets or sets the help text.
+        /// </summary>
+        public string HelpText {
+            get => helpText;
+            set {
+                helpText = value;
+                RaisePropertyChanged(() => HelpText);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the alarm messenger.
+        /// </summary>
+        public HelpMessenger LogMessenger {
+            get => logMessenger;
+            set {
+                logMessenger = value;
+                RaisePropertyChanged(() => LogMessenger);
+            }
+        }
+
 
         #endregion
 
@@ -440,7 +477,7 @@ namespace SerialPortDemo.ViewModel
         /// <param name="e">
         ///     The e.
         /// </param>
-        private void SaveStringData(object sender, SensorEventArgs e)
+        private void SaveSensorStringData(object sender, SensorEventArgs e)
         {
             if (e == null)
             {
@@ -493,13 +530,15 @@ namespace SerialPortDemo.ViewModel
         /// </summary>
         private void ExecuteChangePath()
         {
+            
         }
 
         /// <summary>
-        ///     TODO The execute clear log text.
+        /// TODO The execute clear log text.
         /// </summary>
         private void ExecuteClearLogText()
         {
+            LogMessenger.ClearMessger();
         }
 
         /// <summary>
@@ -540,10 +579,13 @@ namespace SerialPortDemo.ViewModel
                     ProcUnit.StartAutoCollectData(addresses: addressDictionary);
                     IsCollecting = true;
                 }
+
+                LogMessenger.AddMessage("开始采集");
             }
             else
             {
                 ProcUnit.StopCollectData();
+                LogMessenger.AddMessage("关闭采集");
                 IsCollecting = false;
             }
         }
@@ -560,19 +602,34 @@ namespace SerialPortDemo.ViewModel
                 {
                     MessageBox.Show("端口已被占用");
                 }
+                else
+                {
+                    LogMessenger.AddMessage("打开端口");
+                }
             }
             else
             {
                 ProcUnit.ClosePort();
+                LogMessenger.AddMessage("关闭端口");
             }
         }
 
         /// <summary>
-        /// TODO The execute save log text.
+        /// The execute save log text.
         /// </summary>
         private void ExecuteSaveLogText()
         {
+            LogMessenger.SaveMessenger();
         }
+
+        /// <summary>
+        /// The execute clear alarm text.
+        /// </summary>
+        private void ExecuteClearAlarmText()
+        {
+            LogMessenger.ClearMessger();
+        }
+
 
         /// <summary>
         ///     The execute save once command.
@@ -601,13 +658,14 @@ namespace SerialPortDemo.ViewModel
                 fileSb.Append(dt.Millisecond.ToString("d2"));
 
                 timeStr = fileSb.ToString();
-                ProcUnit.SaveEventHandler += SaveStringData;
+                ProcUnit.SaveSensorEventHandler += SaveSensorStringData;
             }
             else
             {
                 IsStartSaveFile = false;
-                ProcUnit.SaveEventHandler -= SaveStringData;
+                ProcUnit.SaveSensorEventHandler -= SaveSensorStringData;
             }
+            
         }
 
         /// <summary>
@@ -677,8 +735,8 @@ namespace SerialPortDemo.ViewModel
         /// </summary>
         private void Init()
         {
-            ProcUnit = new DataProcUnit { SamplingFreq = 100 };
-
+            ProcUnit = new ProcessingSensorData { SamplingFreq = 100 };
+            LogMessenger = new HelpMessenger();
             addressDictionary = new Dictionary<int, bool>();
             var t = ProcUnit.GetPortNames();
             ComCollection = new ObservableCollection<string>();

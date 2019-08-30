@@ -101,6 +101,7 @@
     <Compile Include="Model\SaveEventArgs.cs" />
     <Compile Include="Model\SensorDataModel.cs" />
     <Compile Include="Model\SensorEventArgs.cs" />
+    <Compile Include="ViewModel\HelpMessager.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MasterWindowModel.cs" />
     <Compile Include="ViewModel\OneWindowModel.cs" />
@@ -117,7 +118,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Model\DataProcUnit.cs" />
+    <Compile Include="Model\ProcessingSensorData.cs" />
     <Compile Include="View\SensorPanelView.xaml.cs">
       <DependentUpon>SensorPanelView.xaml</DependentUpon>
     </Compile>

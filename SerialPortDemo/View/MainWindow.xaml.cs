@@ -25,23 +25,23 @@ namespace SerialPortDemo.View {
         /// </summary>
         public MainWindow() {
             InitializeComponent();
-            DataProc = new DataProcUnit();
+            ProcessingSensorDataProc = new ProcessingSensorData();
             InitPortProperty();
         }
 
-        private DataProcUnit DataProc { get; set; }
+        private ProcessingSensorData ProcessingSensorDataProc { get; set; }
 
         /// <summary>
         ///     The init port property.
         /// </summary>
         void InitPortProperty() {
-            if (!DataProc.SetPortParam("COM3", 19200)) {
+            if (!ProcessingSensorDataProc.SetPortParam("COM3", 19200)) {
                 MessageBox.Show("端口未连接");
             }
 
             var baudRateCollection = new ObservableCollection<int> { 2400, 4800, 9600, 19200, 38400, 38400, 57600, 115200 };
 
-            combPort.ItemsSource = DataProc.GetPortNames();
+            combPort.ItemsSource = ProcessingSensorDataProc.GetPortNames();
             combPort.SelectedIndex = 0;
             
             combBaudRate.ItemsSource = baudRateCollection;
@@ -81,8 +81,8 @@ namespace SerialPortDemo.View {
         /// </param>
         void BtOpenOrClose_OnClick(object sender, RoutedEventArgs e) {
             if (btOpenOrClose.Content.ToString() == "停止") {
-                if (DataProc.IsOpenPort) {
-                    DataProc.ClosePort();
+                if (ProcessingSensorDataProc.IsOpenPort) {
+                    ProcessingSensorDataProc.ClosePort();
                     btOpenOrClose.Content = "连接";
                     labelConnect.Content = "关闭";
                 }
@@ -91,8 +91,8 @@ namespace SerialPortDemo.View {
                 }
             }
             else if (btOpenOrClose.Content.ToString() == "连接") {
-                if (!DataProc.IsOpenPort) {
-                    DataProc.OpenPort();
+                if (!ProcessingSensorDataProc.IsOpenPort) {
+                    ProcessingSensorDataProc.OpenPort();
                     btOpenOrClose.Content = "停止";
                     labelConnect.Content = "已开启";
                 }
@@ -115,7 +115,7 @@ namespace SerialPortDemo.View {
         ///     The e.
         /// </param>
         void BtnSend_OnClick(object sender, RoutedEventArgs e) {
-            // DataProc.SendBytes(,tbSend.Text);
+            // ProcessingSensorDataProc.SendBytes(,tbSend.Text);
         }
 
         /// <summary>

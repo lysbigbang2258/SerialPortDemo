@@ -31,7 +31,7 @@ namespace SerialPortDemo.ViewModel {
         string labNum;
 
         /// <summary>
-        ///  The checkbox is checked.
+        /// The checkbox is checked.
         /// </summary>
         private bool isChecked;
 

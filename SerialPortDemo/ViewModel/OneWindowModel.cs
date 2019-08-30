@@ -46,7 +46,7 @@ namespace SerialPortDemo.ViewModel
             }
         }
 
-        public DataProcUnit ProcUnit { get; set; }
+        public ProcessingSensorData ProcUnit { get; set; }
 
         #region 命令
 
@@ -83,11 +83,11 @@ namespace SerialPortDemo.ViewModel
             if (!isOpen)
             {
                 isOpen = true;
-                ProcUnit = new DataProcUnit();
+                ProcUnit = new ProcessingSensorData();
                 ProcUnit.SetPortParam();
                 ProcUnit.OpenPort();
                 ProcUnit.StartRcvData();
-                ProcUnit.SendEventHandler += AnglesGetReached;
+                ProcUnit.SendSensorEventHandler += AnglesGetReached;
                 Messenger.Default.Send("关闭串口", "ContentChanged"); // 注意：token参数一致   
             }
             else

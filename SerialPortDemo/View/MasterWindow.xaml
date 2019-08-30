@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ni="http://schemas.ni.com/controls/2009/xaml/presentation"
     Title="MasterWindow"
-    Width="1100"
+    Width="1200"
     Height="750"
     DataContext="{Binding Source={StaticResource Locator}, Path=MasterWindow, Mode=Default}"
     FontFamily="SimSun，微软雅黑"
@@ -387,7 +387,7 @@
 
             <Grid
                 Grid.Column="1"
-                Width="200"
+                Width="300"
                 Margin="5">
                 <StackPanel>
                     <Label
@@ -396,17 +396,22 @@
                         Content="消息中心"
                         FontSize="20" />
 
-                    <TextBox Height="530" VerticalScrollBarVisibility="Visible" />
+                    <TextBox
+                        Height="530"
+                        Text="{Binding LogMessenger.Message, Mode=OneWay}"
+                        VerticalScrollBarVisibility="Visible" />
 
                     <DockPanel Height="50" VerticalAlignment="Bottom">
                         <Button
                             Width="120"
                             Height="30"
                             Margin="5"
+                            Command="{Binding SaveLogTextCommand, Mode=OneWay}"
                             Content="保存为日志" />
                         <Button
                             Height="30"
                             Margin="5"
+                            Command="{Binding ClearLogTextCommand, Mode=OneWay}"
                             Content="清空" />
                     </DockPanel>
                 </StackPanel>
